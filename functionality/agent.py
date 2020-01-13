@@ -7,20 +7,31 @@ class Human(Agent):
         super().__init__(unique_id, model)
         self.pos = pos
         self.character = random.random()
+        self.interaction = False
 
     def step(self):
-        self.random_move()
-        neighbors = self.model.grid.get_neighbors(self.pos, True, include_center=True, radius=0)
-        for neighbor in neighbors:
-            if self.unique_id != neighbor.unique_id:
-                # only the upper part of matrix is used, thus the ordering of indexes
-                i = np.max([self.unique_id, neighbor.unique_id])
-                j = np.min([self.unique_id, neighbor.unique_id])
-                suitability = 1 - np.abs(self.character - neighbor.character)
-                if random.random() < suitability:
-                    self.model.friends[i][j] = 1
-                self.model.interactions[i][j] += 1
-            break
+
+        if self.interaction == True:
+            self.random_move()
+        else:
+            neighbors = self.model.grid.get_neighbors(self.pos, True, include_center=True, radius=0)
+            for neighbor in neighbors:
+                if self.unique_id != neighbor.unique_id:
+                    # only the upper part of matrix is used, thus the ordering of indexes
+                    i = np.max([self.unique_id, neighbor.unique_id])
+                    j = np.min([self.unique_id, neighbor.unique_id])
+                    suitability = 1 - np.abs(self.character - neighbor.character)
+
+
+                    if random.random() < suitability:
+                        self.model.friends[i][j] = 1
+                    self.model.interactions[i][j] += 1
+                    self.interaction = True
+
+                    break
+
+        if self.interaction == False:
+            self.random_move()
 
     def has_friends(self):
         friend_count = self.nr_friends()

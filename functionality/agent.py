@@ -6,7 +6,7 @@ class Human(Agent):
     def __init__(self, unique_id, model, pos):
         super().__init__(unique_id, model)
         self.pos = pos
-        self.character = random.random()
+        self.character = {'attribute_one':random.uniform(0,1),'attribute_two':random.uniform(0,1)}
         self.interaction = False
 
     def step(self):
@@ -20,13 +20,17 @@ class Human(Agent):
                     # only the upper part of matrix is used, thus the ordering of indexes
                     i = np.max([self.unique_id, neighbor.unique_id])
                     j = np.min([self.unique_id, neighbor.unique_id])
-                    suitability = 1 - np.abs(self.character - neighbor.character)
 
+                    character_vector = [i for i in self.character.values()]
+                    neighbour_character_vector = np.array([i for i in neighbor.character.values()])
+                    character_dist = np.linalg.norm(character_vector-neighbour_character_vector)
+                    
+                    suitability = 1 - np.abs(character_dist)
 
-                    if random.random() < suitability:
+                    if suitability < 0.5:
                         self.model.friends[i][j] = 1
-                    self.model.interactions[i][j] += 1
-                    self.interaction = True
+                        self.model.interactions[i][j] += 1
+                        self.interaction = True
 
                     break
 

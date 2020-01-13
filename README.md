@@ -8,8 +8,14 @@
 ## Setup
 * clone repo
 * create virtualenv inside '/abm': ```python -m venv env```
-* acitvate virtual environment: ```source env/bin/activate```
+* activate virtual environment: ```source env/bin/activate```
 * install requirements: ```pip install -r requirements.txt```
+
+## Adding dependencies
+* activate virtual environment: ```source env/bin/activate```
+* install package: ```pip install <package_name>```
+* write requirements: ```pip freeze > requirements.txt```
+* push requirements.txt to GitHub
 
 ## Note on .gitignore
 After creating virtual environment it is also recommended to create a file called '.gitignore'

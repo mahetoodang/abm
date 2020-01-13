@@ -22,3 +22,4 @@ After creating virtual environment it is also recommended to create a file calle
 In this file you can include stuff that you don't want to commit to GitHub.
 For example, I don't want to commit my environment. In this case the content of '.gitignore' would be one line:
 * /env
+* __pycache__

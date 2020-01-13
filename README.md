@@ -8,7 +8,7 @@
 ## Setup
 * clone repo
 * create virtualenv inside '/abm': ```python -m venv env```
-* activate virtual environment: ```source env/bin/activate```
+* activate virtual environment: ```source env/bin/activate``` (for windows users use `\env\Scripts\activate.bat`)
 * install requirements: ```pip install -r requirements.txt```
 
 ## Adding dependencies

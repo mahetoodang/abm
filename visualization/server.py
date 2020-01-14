@@ -13,15 +13,13 @@ def draw_agent(agent):
     portrayal = {
         "Filled": "true",
         "Layer": 0,
-        "Color": "#" + ("%06x" % int(agent.character * 0x0000FF))
+        "Shape": "circle",
+        "r": 0.5
     }
     if agent.has_friends():
-        portrayal["Shape"] = "rect"
-        portrayal["w"] = 0.5
-        portrayal["h"] = 0.5
+        portrayal["Color"] = "Red"
     else:
-        portrayal["Shape"] = "circle"
-        portrayal["r"] = 0.5
+        portrayal["Color"] = "Blue"
     return portrayal
 
 

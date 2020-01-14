@@ -1,4 +1,5 @@
 import numpy as np
+from copy import deepcopy
 
 
 def find_path(start_pos, end_pos, length):
@@ -26,10 +27,8 @@ def find_path(start_pos, end_pos, length):
 
 def find_non_overlapping_order(steps):
     np.random.shuffle(steps)
-    i = 0
-    while does_overlap(steps):
-        np.random.shuffle(steps)
-        i += 1
+    #while does_overlap(steps):
+    #    np.random.shuffle(steps)
     return steps
 
 

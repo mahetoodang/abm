@@ -17,7 +17,7 @@ class Friends(Model):
     def __init__(
             self,
             height=20, width=20,
-            population_size=20
+            population_size=6
     ):
 
         super().__init__()

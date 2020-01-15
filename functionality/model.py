@@ -17,7 +17,7 @@ class Friends(Model):
     def __init__(
             self,
             height=20, width=20,
-            population_size=6
+            population_size=20
     ):
 
         super().__init__()
@@ -39,6 +39,7 @@ class Friends(Model):
         self.init_population(self.population_size)
         self.friends = self.init_matrix()
         self.interactions = self.init_matrix()
+        self.friends_score = self.init_matrix()
 
         # This is required for the datacollector to work
         self.running = True
@@ -64,9 +65,12 @@ class Friends(Model):
 
     def step(self):
         self.schedule.step()
+        self.friends_score = self.friends_score * 0.99
+
         # Save the statistics
         self.data_collector.collect(self)
 
     def run_model(self, step_count=200):
         for i in range(step_count):
             self.step()
+        print(self.friends_score)

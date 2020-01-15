@@ -44,6 +44,7 @@ class Human(Agent):
                 if suitability < 0.5:
                     self.model.friends[i][j] = 1
                     self.model.interactions[i][j] += 1
+                    self.model.friends_score[i][j] += 1
                     self.interaction = True
                 break
 

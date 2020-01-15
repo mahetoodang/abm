@@ -43,9 +43,9 @@ class Human(Agent):
                 suitability = 1 - np.abs(character_dist)
                 if suitability < 0.5:
                     self.model.friends[i][j] = 1
-                    self.model.interactions[i][j] += 1
                     self.model.friends_score[i][j] += 1
                     self.interaction = True
+                self.model.interactions[i][j] += 1
                 break
 
     def create_trip(self):

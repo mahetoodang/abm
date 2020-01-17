@@ -19,7 +19,7 @@ class Friends(Model):
     def __init__(
             self,
             height=20, width=20,
-            population_size=40
+            population_size=10
     ):
 
         super().__init__()
@@ -85,4 +85,4 @@ class Friends(Model):
             # once every 5 steps
             if i % 5 == 0:
                  self.friends_score = self.friends_score * 0.99
-        print(self.friends_score)
+        return self.friends_score

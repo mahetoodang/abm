@@ -8,7 +8,7 @@ sys.path.append('../')
 
 from functionality.model import Friends
 
-model_params = {"population_size": UserSettableParameter('slider', 'population_size', 1, 1, 10)}
+model_params = {"population_size": UserSettableParameter('slider', 'population_size', 1, 1, 500)}
 
 def draw_agent(agent):
     if agent is None:

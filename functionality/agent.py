@@ -30,22 +30,29 @@ class Human(Agent):
         if not self.interaction and len(self.path):
             self.move()
 
+    def calculate_social_distance(self, neighbor):
+        # social distance calculation
+        character_vector = [i for i in self.character.values()]
+        neighbour_character_vector = np.array([i for i in neighbor.character.values()])
+        character_dist = np.linalg.norm(character_vector - neighbour_character_vector)
+        suitability = 1 - np.abs(character_dist)
+        return suitability
+
     def interact_with_neighbors(self):
         neighbors = self.model.grid.get_neighbors(self.pos, True, include_center=True, radius=0)
         for neighbor in neighbors:
             if self.unique_id != neighbor.unique_id:
+
+                # Get social distance
+                suitability = self.calculate_social_distance(neighbor)
+
                 # only the upper part of matrix is used, thus the ordering of indexes
                 i = np.max([self.unique_id, neighbor.unique_id])
                 j = np.min([self.unique_id, neighbor.unique_id])
-                character_vector = [i for i in self.character.values()]
-                neighbour_character_vector = np.array([i for i in neighbor.character.values()])
-                character_dist = np.linalg.norm(character_vector - neighbour_character_vector)
-                suitability = 1 - np.abs(character_dist)
-                ##print(suitability)
                 if random.uniform(0, 0.6) < suitability:
                     self.model.friends[i][j] = 1
                     self.model.friends_score[i][j] += 1 + random.random() * suitability
-                    self.interaction = True
+                #self.interaction = True
                 self.model.interactions[i][j] += 1
                 break
 

@@ -1,5 +1,6 @@
 import numpy as np
 from copy import deepcopy
+from random import choice
 
 
 def find_path(start_pos, end_pos, length):
@@ -22,14 +23,44 @@ def find_path(start_pos, end_pos, length):
             steps.append([0, 1])
             steps.append([0, -1])
         missing_steps -= 2
-    return find_non_overlapping_order(steps)
+    return non_overlapping_path(steps, [])
 
 
-def find_non_overlapping_order(steps):
-    np.random.shuffle(steps)
-    #while does_overlap(steps):
-    #    np.random.shuffle(steps)
-    return steps
+def non_overlapping_path(steps, path):
+    remaining = deepcopy(steps)
+    if not len(remaining):
+        return path
+    move_options = possible_options(remaining)
+    while len(move_options):
+        move = choice(move_options)
+        move_options.remove(move)
+        new_path = deepcopy(path)
+        new_path.append(move)
+        if not does_overlap(new_path):
+            try_remaining = deepcopy(remaining)
+            try_remaining.remove(move)
+            found_path = non_overlapping_path(try_remaining, new_path)
+            if found_path:
+                return found_path
+    return False
+
+
+def remove_from_array(base_array, test_array):
+    for index in range(len(base_array)):
+        if np.array_equal(base_array[index], test_array):
+            base_array.pop(index)
+            break
+
+
+def possible_options(remaining):
+    cardinals = [[1, 0], [0, 1], [-1, 0], [0, -1]]
+    possible = []
+    for c in cardinals:
+        for dir in remaining:
+            if c[0] == dir[0] and c[1] == dir[1]:
+                possible.append(c)
+                break
+    return possible
 
 
 def does_overlap(steps):
@@ -48,7 +79,7 @@ def does_overlap(steps):
 
 
 if __name__ == '__main__':
-    steps = find_path([0, 0], [-10, 10], 26)
+    steps = find_path([0, 0], [10, -10], 26)
     pos = [0, 0]
     for step in steps:
         pos = [

@@ -14,6 +14,7 @@ class Friends(Model):
     '''
     Model of making friends in a spatial setting
     '''
+
     def __init__(
             self,
             height=20, width=20,

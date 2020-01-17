@@ -1,5 +1,6 @@
 import numpy as np
 from copy import deepcopy
+from random import choice
 
 
 def find_path(start_pos, end_pos, length):
@@ -7,6 +8,7 @@ def find_path(start_pos, end_pos, length):
     y = end_pos[1] - start_pos[1]
     manhattan = np.abs(x) + np.abs(y)
     if (length < manhattan) or (length - manhattan) % 2 != 0:
+        print("ai jama")
         return False
     steps = []
     for i in range(np.abs(x)):
@@ -15,21 +17,69 @@ def find_path(start_pos, end_pos, length):
         steps.append([0, np.sign(y) * 1])
     missing_steps = length - manhattan
     while missing_steps > 0:
-        if np.random.random() < 0.5:
-            steps.append([1, 0])
-            steps.append([-1, 0])
+        [all_same, init_step] = moves_of_same_type(steps)
+        if not all_same:
+            if np.random.random() < 0.5:
+                steps.append([1, 0])
+                steps.append([-1, 0])
+            else:
+                steps.append([0, 1])
+                steps.append([0, -1])
         else:
-            steps.append([0, 1])
-            steps.append([0, -1])
+            if init_step[0] == 0:
+                steps.append([1, 0])
+                steps.append([-1, 0])
+            else:
+                steps.append([0, 1])
+                steps.append([0, -1])
         missing_steps -= 2
-    return find_non_overlapping_order(steps)
+    return non_overlapping_path(steps, [])
 
 
-def find_non_overlapping_order(steps):
-    np.random.shuffle(steps)
-    #while does_overlap(steps):
-    #    np.random.shuffle(steps)
-    return steps
+def non_overlapping_path(steps, path):
+    remaining = deepcopy(steps)
+    if not len(remaining):
+        return path
+    move_options = possible_options(remaining)
+    while len(move_options):
+        move = choice(move_options)
+        move_options.remove(move)
+        new_path = deepcopy(path)
+        new_path.append(move)
+        if not does_overlap(new_path):
+            try_remaining = deepcopy(remaining)
+            try_remaining.remove(move)
+            found_path = non_overlapping_path(try_remaining, new_path)
+            if found_path:
+                return found_path
+    return False
+
+
+def moves_of_same_type(steps):
+    init_step = steps[0]
+    all_same = True
+    for step in steps:
+        if step[0] != init_step[0] or step[1] != init_step[1]:
+            all_same = False
+    return [all_same, init_step]
+
+
+def remove_from_array(base_array, test_array):
+    for index in range(len(base_array)):
+        if np.array_equal(base_array[index], test_array):
+            base_array.pop(index)
+            break
+
+
+def possible_options(remaining):
+    cardinals = [[1, 0], [0, 1], [-1, 0], [0, -1]]
+    possible = []
+    for c in cardinals:
+        for dir in remaining:
+            if c[0] == dir[0] and c[1] == dir[1]:
+                possible.append(c)
+                break
+    return possible
 
 
 def does_overlap(steps):
@@ -48,7 +98,7 @@ def does_overlap(steps):
 
 
 if __name__ == '__main__':
-    steps = find_path([0, 0], [-10, 10], 26)
+    steps = find_path([0, 0], [0, 6], 8)
     pos = [0, 0]
     for step in steps:
         pos = [

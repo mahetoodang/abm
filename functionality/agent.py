@@ -22,7 +22,8 @@ class Human(Agent):
         if self.interaction and len(self.path):
             self.move()
         else:
-            self.go_home()
+            if not len(self.path):
+                self.go_home()
 
         if not self.interaction:
             self.interact_with_neighbors()
@@ -64,12 +65,14 @@ class Human(Agent):
         x_dir = 1 if random.random() < 0.5 else -1
         y_dir = 1 if random.random() < 0.5 else -1
         destination = [x_dir * x_len, y_dir * y_len]
-        self.path = find_path([0, 0], destination, trip_length + 2)
+        path = find_path([0, 0], destination, trip_length + 2)
+        self.path = path
 
     def go_home(self):
         destination = self.relative_home_location()
         trip_length = np.abs(destination[0]) + np.abs(destination[1])
-        self.path = find_path([0, 0], destination, trip_length + 2)
+        path = find_path([0, 0], destination, trip_length + 2)
+        self.path = path
 
     def has_friends(self):
         friend_count = self.nr_friends()

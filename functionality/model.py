@@ -90,11 +90,12 @@ class Friends(Model):
 
         for agent in self.schedule.agents:
             score, social, spatial, count = agent.get_avg()
-            print(agent.unique_id)
-            print(count)
-            print(score)
-            print(social)
-            print(spatial)
+            print('id: :' + str(agent.unique_id))
+            print('#: ' + str(count))
+            print('friends score: ' + str(score))
+            print('avg. social distance: ' + str(social))
+            print('avg. spatial distance: ' + str(spatial))
             print()
+
         return self.friends_score
         #self.store(self.friends_score, False)

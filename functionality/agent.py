@@ -49,7 +49,7 @@ class Human(Agent):
             # Sum
             for friend in friends:
                 #score_sum += self.model.friends_score[self.unique_id][friend.unique_id]
-                score_sum += self.model.friends_score.get_value(self.unique_id, friend.unique_id)
+                score_sum += self.model.friends_score.at[self.unique_id, friend.unique_id]
                 social_sum += abs(self.character - friend.character)
                 spatial_sum += self.get_distance(friend.pos)
 

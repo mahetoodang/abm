@@ -1,6 +1,7 @@
 from mesa.visualization.modules import CanvasGrid
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.UserParam import UserSettableParameter
+from mesa.visualization.modules import ChartModule
 
 import sys
 sys.path.append('../')
@@ -24,7 +25,14 @@ def draw_agent(agent):
         portrayal["Color"] = "Blue"
     return portrayal
 
+friend_chart = ChartModule([{"Label":"Friends", "Color": "Black"}], data_collector_name='data_collector')
+
+interaction_chart = ChartModule([{"Label":"Interactions", "Color": "Blue"}], data_collector_name='data_collector')
 
 canvas_element = CanvasGrid(draw_agent, 20, 20, 500, 500)
-server = ModularServer(Friends, [canvas_element], "Making friends", model_params)
+
+element_list = [canvas_element, friend_chart, interaction_chart]
+
+server = ModularServer(Friends, element_list, "Making friends", model_params)
+
 server.launch()

@@ -39,15 +39,10 @@ class Human(Agent):
                 j = np.min([self.unique_id, neighbor.unique_id])
                 character_vector = [i for i in self.character.values()]
                 neighbour_character_vector = np.array([i for i in neighbor.character.values()])
-<<<<<<< HEAD
                 character_dist = np.linalg.norm(character_vector - neighbour_character_vector)
                 suitability = 1 - np.abs(character_dist)
                 ##print(suitability)
                 if random.uniform(0, 0.6) < suitability:
-=======
-                character_diff = np.abs(np.linalg.norm(character_vector - neighbour_character_vector))
-                if character_diff < 0.5:
->>>>>>> 0d76dbecb7a4feaedbefc50ca529ff9e89831b58
                     self.model.friends[i][j] = 1
                     self.model.friends_score[i][j] += 1 + random.random() * suitability
                     self.interaction = True

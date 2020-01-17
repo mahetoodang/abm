@@ -96,5 +96,5 @@ class Friends(Model):
             print(social)
             print(spatial)
             print()
+        return self.friends_score
         #self.store(self.friends_score, False)
-        

@@ -11,11 +11,6 @@ class Human(Agent):
         self.home = pos
         self.max_travel = np.random.randint(9, 14)
         self.character = random.random()
-
-        #{
-        #'attribute_one': random.uniform(0, 1),
-        #'attribute_two': random.uniform(0, 1)
-        #}
         self.interaction = False
         self.path = []
 
@@ -65,39 +60,6 @@ class Human(Agent):
 
         return avg_score, avg_social, avg_spatial, count
 
-    '''
-    def get_avg(self, n, model, friends_score):
-
-        count = 0
-        score_sum = 0
-        friends_id = []
-        for i in range(n):
-            if friends_score[self.unique_id][i] > 0:
-                count += 1
-                score_sum += matrix[self.unique_id][i]
-                friends_id.append(i)
-
-        social_sum = 0
-        spatial_sum = 0
-        for agent in model.schedule.agents:
-            for id in friends_id:
-                if id == agent.unique_id:
-                    friend_char = agent.get_character()
-                    friend_pos += agent.get_pos()
-
-                    social_sum += abs(self.character-friend_char)
-                    spatial_sum += abs(self.pos[0] - friend_pos[0]) + abs(self.pos[1] - friend_pos[1])
-
-
-        avg_score = score_sum/count
-        avg_social += model.schedule.agents[i]/count
-        avg_score += count
-                # COMBAK:
-
-
-
-        print
-    '''
     def step(self):
         if self.is_home():
             self.create_trip()
@@ -113,43 +75,24 @@ class Human(Agent):
         if not self.interaction and len(self.path):
             self.move()
 
-    def calculate_social_distance(self, neighbor):
-        # social distance calculation
-        character_vector = [i for i in self.character.values()]
-        neighbour_character_vector = np.array([i for i in neighbor.character.values()])
-        character_dist = np.linalg.norm(character_vector - neighbour_character_vector)
-        suitability = 1 - np.abs(character_dist)
-        return suitability
-
     def interact_with_neighbors(self):
         neighbors = self.model.grid.get_neighbors(self.pos, True, include_center=True, radius=0)
         for neighbor in neighbors:
             if self.unique_id != neighbor.unique_id:
 
-                # Get social distance
-                suitability = self.calculate_social_distance(neighbor)
 
                 # only the upper part of matrix is used, thus the ordering of indexes
                 i = np.max([self.unique_id, neighbor.unique_id])
                 j = np.min([self.unique_id, neighbor.unique_id])
-<<<<<<< HEAD
-                #character_vector = [i for i in self.character.values()]
-                #neighbour_character_vector = np.array([i for i in neighbor.character.values()])
 
-                #character_dist = np.linalg.norm(character_vector - neighbour_character_vector)
-
+                # social distance & suitability
                 character_dist = abs(self.character - neighbor.character)
                 suitability = 1 - np.abs(character_dist)
                 ##print(suitability)
                 if random.uniform(0, 0.6) < suitability:
                     self.model.friends[i][j] = 1
                     self.model.friends_score[i][j] += 1 + random.random() * suitability
-=======
-                if random.uniform(0, 0.6) < suitability:
-                    self.model.friends[i][j] = 1
-                    self.model.friends_score[i][j] += 1 + random.random() * suitability
-                #self.interaction = True
->>>>>>> cb3e8b82a7113b4a993e088084305d06ccb6a1c2
+
                 self.model.interactions[i][j] += 1
                 break
 

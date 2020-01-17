@@ -8,6 +8,7 @@ def find_path(start_pos, end_pos, length):
     y = end_pos[1] - start_pos[1]
     manhattan = np.abs(x) + np.abs(y)
     if (length < manhattan) or (length - manhattan) % 2 != 0:
+        print("ai jama")
         return False
     steps = []
     for i in range(np.abs(x)):
@@ -16,12 +17,21 @@ def find_path(start_pos, end_pos, length):
         steps.append([0, np.sign(y) * 1])
     missing_steps = length - manhattan
     while missing_steps > 0:
-        if np.random.random() < 0.5:
-            steps.append([1, 0])
-            steps.append([-1, 0])
+        [all_same, init_step] = moves_of_same_type(steps)
+        if not all_same:
+            if np.random.random() < 0.5:
+                steps.append([1, 0])
+                steps.append([-1, 0])
+            else:
+                steps.append([0, 1])
+                steps.append([0, -1])
         else:
-            steps.append([0, 1])
-            steps.append([0, -1])
+            if init_step[0] == 0:
+                steps.append([1, 0])
+                steps.append([-1, 0])
+            else:
+                steps.append([0, 1])
+                steps.append([0, -1])
         missing_steps -= 2
     return non_overlapping_path(steps, [])
 
@@ -43,6 +53,15 @@ def non_overlapping_path(steps, path):
             if found_path:
                 return found_path
     return False
+
+
+def moves_of_same_type(steps):
+    init_step = steps[0]
+    all_same = True
+    for step in steps:
+        if step[0] != init_step[0] or step[1] != init_step[1]:
+            all_same = False
+    return [all_same, init_step]
 
 
 def remove_from_array(base_array, test_array):
@@ -79,7 +98,7 @@ def does_overlap(steps):
 
 
 if __name__ == '__main__':
-    steps = find_path([0, 0], [10, -10], 26)
+    steps = find_path([0, 0], [0, 6], 8)
     pos = [0, 0]
     for step in steps:
         pos = [

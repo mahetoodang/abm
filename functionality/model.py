@@ -2,7 +2,6 @@ import random
 import numpy as np
 import pandas as pd
 import networkx as nx
-import matplotlib.pyplot as plt
 
 from mesa import Model
 from mesa.space import MultiGrid
@@ -39,6 +38,7 @@ class Friends(Model):
         })
 
         # Create the population
+        self.M = nx.Graph()
         self.init_population(self.population_size)
         self.friends = self.init_matrix()
         self.interactions = self.init_matrix()
@@ -61,6 +61,7 @@ class Friends(Model):
         mat = pd.DataFrame(np.zeros((n, n)), index=ids, columns=ids)
         return mat
 
+<<<<<<< HEAD
     def store(self, Graph, bool):
         if bool:
             if list(Graph)[0]==0:
@@ -87,16 +88,18 @@ class Friends(Model):
 
             plt.show()
 
+=======
+>>>>>>> 0d76dbecb7a4feaedbefc50ca529ff9e89831b58
     def new_agent(self, pos):
-        ID = self.next_id()
-        agent = Human(ID, self, pos)
+        agent_id = self.next_id()
+        agent = Human(agent_id, self, pos)
         self.grid.place_agent(agent, pos)
         self.schedule.add(agent)
 
         #ID and initial pos also used for node graph
         M = nx.Graph()
-        M.add_node((ID-1), pos=pos)
-        self.store(M, True)
+        M.add_node((agent_id-1), pos=pos)
+        self.M = nx.compose(self.M, M)
 
     def step(self):
         self.schedule.step()
@@ -106,6 +109,7 @@ class Friends(Model):
 
     def run_model(self, step_count=500):
         for i in range(step_count):
+<<<<<<< HEAD
             self.step()
 
             # once every 5 steps
@@ -113,3 +117,6 @@ class Friends(Model):
                  self.friends_score = self.friends_score * 0.99
         print(self.friends_score)
         self.store(self.friends_score, False)
+=======
+            self.step()
+>>>>>>> 0d76dbecb7a4feaedbefc50ca529ff9e89831b58

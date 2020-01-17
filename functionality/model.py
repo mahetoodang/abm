@@ -20,7 +20,7 @@ class Friends(Model):
     def __init__(
             self,
             height=20, width=20,
-            population_size=20
+            population_size=40
     ):
 
         super().__init__()
@@ -67,7 +67,7 @@ class Friends(Model):
                 global M
                 M = Graph
             else:
-                M = nx.compose(M,Graph)    
+                M = nx.compose(M,Graph)
         else:
             #to plot the nodes and edges of friendships
             scores = Graph.to_numpy()
@@ -75,7 +75,7 @@ class Friends(Model):
                 for t in range(len(scores[0])):
                     if scores[j][t]!=0:
                         M.add_edge(j,t, weight = scores[j][t])
-        
+
             close=[(u,v) for (u,v,d) in M.edges(data=True) if d['weight'] <0.3]
             mid=[(u,v) for (u,v,d) in M.edges(data=True) if d['weight'] >0.3 and d['weight']<0.6]
             far=[(u,v) for (u,v,d) in M.edges(data=True) if d['weight'] >=0.6]
@@ -100,13 +100,16 @@ class Friends(Model):
 
     def step(self):
         self.schedule.step()
-        self.friends_score = self.friends_score * 0.99
 
         # Save the statistics
         self.data_collector.collect(self)
 
-    def run_model(self, step_count=200):
+    def run_model(self, step_count=500):
         for i in range(step_count):
             self.step()
+
+            # once every 5 steps
+            if i % 5 == 0:
+                 self.friends_score = self.friends_score * 0.99
         print(self.friends_score)
-        self.store(self.friends_score, False)  
+        self.store(self.friends_score, False)

@@ -1,6 +1,7 @@
 from mesa import Agent
 import random
 import numpy as np
+import math
 from .path_finder import find_path
 
 class Human(Agent):
@@ -9,13 +10,94 @@ class Human(Agent):
         self.pos = pos
         self.home = pos
         self.max_travel = np.random.randint(9, 14)
-        self.character = {
-            'attribute_one': random.uniform(0, 1),
-            'attribute_two': random.uniform(0, 1)
-        }
+        self.character = random.random()
+
+        #{
+        #'attribute_one': random.uniform(0, 1),
+        #'attribute_two': random.uniform(0, 1)
+        #}
         self.interaction = False
         self.path = []
 
+    def get_pos(self):
+        return self.pos
+
+    def get_character(self):
+        return self.character
+
+    def get_friends(self):
+        others = self.model.friends_score[self.unique_id]
+        ids = others[others > 0].index
+        friends = []
+        for agent in self.model.schedule.agents:
+            if agent.unique_id in ids:
+                friends.append(agent)
+        return friends
+
+    def get_distance(self, friend_pos):
+        # returns euclidean distance to friend position
+        return math.sqrt((self.pos[0] - friend_pos[0])**2 + (self.pos[1] - friend_pos[1])**2)
+
+    def get_avg(self):
+        friends = self.get_friends()
+
+        count = len(friends)
+        score_sum = 0
+        social_sum = 0
+        spatial_sum = 0
+
+        if count == 0:
+            avg_score = score_sum
+            avg_social = social_sum
+            avg_spatial = spatial_sum
+        else:
+            # Sum
+            for friend in friends:
+                #score_sum += self.model.friends_score[self.unique_id][friend.unique_id]
+                score_sum += self.model.friends_score.get_value(self.unique_id, friend.unique_id)
+                social_sum += abs(self.character - friend.character)
+                spatial_sum += self.get_distance(friend.pos)
+
+            # Average
+            avg_score = score_sum/count
+            avg_social = social_sum/count
+            avg_spatial = spatial_sum/count
+
+        return avg_score, avg_social, avg_spatial, count
+
+    '''
+    def get_avg(self, n, model, friends_score):
+
+        count = 0
+        score_sum = 0
+        friends_id = []
+        for i in range(n):
+            if friends_score[self.unique_id][i] > 0:
+                count += 1
+                score_sum += matrix[self.unique_id][i]
+                friends_id.append(i)
+
+        social_sum = 0
+        spatial_sum = 0
+        for agent in model.schedule.agents:
+            for id in friends_id:
+                if id == agent.unique_id:
+                    friend_char = agent.get_character()
+                    friend_pos += agent.get_pos()
+
+                    social_sum += abs(self.character-friend_char)
+                    spatial_sum += abs(self.pos[0] - friend_pos[0]) + abs(self.pos[1] - friend_pos[1])
+
+
+        avg_score = score_sum/count
+        avg_social += model.schedule.agents[i]/count
+        avg_score += count
+                # COMBAK:
+
+
+
+        print
+    '''
     def step(self):
         if self.is_home():
             self.create_trip()
@@ -37,20 +119,17 @@ class Human(Agent):
                 # only the upper part of matrix is used, thus the ordering of indexes
                 i = np.max([self.unique_id, neighbor.unique_id])
                 j = np.min([self.unique_id, neighbor.unique_id])
-                character_vector = [i for i in self.character.values()]
-                neighbour_character_vector = np.array([i for i in neighbor.character.values()])
-<<<<<<< HEAD
-                character_dist = np.linalg.norm(character_vector - neighbour_character_vector)
+                #character_vector = [i for i in self.character.values()]
+                #neighbour_character_vector = np.array([i for i in neighbor.character.values()])
+
+                #character_dist = np.linalg.norm(character_vector - neighbour_character_vector)
+
+                character_dist = abs(self.character - neighbor.character)
                 suitability = 1 - np.abs(character_dist)
                 ##print(suitability)
                 if random.uniform(0, 0.6) < suitability:
-=======
-                character_diff = np.abs(np.linalg.norm(character_vector - neighbour_character_vector))
-                if character_diff < 0.5:
->>>>>>> 0d76dbecb7a4feaedbefc50ca529ff9e89831b58
                     self.model.friends[i][j] = 1
                     self.model.friends_score[i][j] += 1 + random.random() * suitability
-                    self.interaction = True
                 self.model.interactions[i][j] += 1
                 break
 

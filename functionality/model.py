@@ -19,7 +19,7 @@ class Friends(Model):
     def __init__(
             self,
             height=20, width=20,
-            population_size=100
+            population_size=10
     ):
 
         super().__init__()
@@ -81,7 +81,6 @@ class Friends(Model):
 
     def run_model(self, step_count=500):
         for i in range(step_count):
-            #print(i)
             self.step()
 
             # once every 5 steps
@@ -98,3 +97,4 @@ class Friends(Model):
             print(spatial)
             print()
         #self.store(self.friends_score, False)
+        

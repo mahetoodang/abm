@@ -104,7 +104,8 @@ class Human(Agent):
         if self.interaction and len(self.path):
             self.move()
         else:
-            self.go_home()
+            if not len(self.path):
+                self.go_home()
 
         if not self.interaction:
             self.interact_with_neighbors()
@@ -112,13 +113,26 @@ class Human(Agent):
         if not self.interaction and len(self.path):
             self.move()
 
+    def calculate_social_distance(self, neighbor):
+        # social distance calculation
+        character_vector = [i for i in self.character.values()]
+        neighbour_character_vector = np.array([i for i in neighbor.character.values()])
+        character_dist = np.linalg.norm(character_vector - neighbour_character_vector)
+        suitability = 1 - np.abs(character_dist)
+        return suitability
+
     def interact_with_neighbors(self):
         neighbors = self.model.grid.get_neighbors(self.pos, True, include_center=True, radius=0)
         for neighbor in neighbors:
             if self.unique_id != neighbor.unique_id:
+
+                # Get social distance
+                suitability = self.calculate_social_distance(neighbor)
+
                 # only the upper part of matrix is used, thus the ordering of indexes
                 i = np.max([self.unique_id, neighbor.unique_id])
                 j = np.min([self.unique_id, neighbor.unique_id])
+<<<<<<< HEAD
                 #character_vector = [i for i in self.character.values()]
                 #neighbour_character_vector = np.array([i for i in neighbor.character.values()])
 
@@ -130,6 +144,12 @@ class Human(Agent):
                 if random.uniform(0, 0.6) < suitability:
                     self.model.friends[i][j] = 1
                     self.model.friends_score[i][j] += 1 + random.random() * suitability
+=======
+                if random.uniform(0, 0.6) < suitability:
+                    self.model.friends[i][j] = 1
+                    self.model.friends_score[i][j] += 1 + random.random() * suitability
+                #self.interaction = True
+>>>>>>> cb3e8b82a7113b4a993e088084305d06ccb6a1c2
                 self.model.interactions[i][j] += 1
                 break
 
@@ -141,12 +161,14 @@ class Human(Agent):
         x_dir = 1 if random.random() < 0.5 else -1
         y_dir = 1 if random.random() < 0.5 else -1
         destination = [x_dir * x_len, y_dir * y_len]
-        self.path = find_path([0, 0], destination, trip_length + 2)
+        path = find_path([0, 0], destination, trip_length + 2)
+        self.path = path
 
     def go_home(self):
         destination = self.relative_home_location()
         trip_length = np.abs(destination[0]) + np.abs(destination[1])
-        self.path = find_path([0, 0], destination, trip_length + 2)
+        path = find_path([0, 0], destination, trip_length + 2)
+        self.path = path
 
     def has_friends(self):
         friend_count = self.nr_friends()

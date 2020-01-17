@@ -42,8 +42,9 @@ class Human(Agent):
                 character_diff = np.abs(np.linalg.norm(character_vector - neighbour_character_vector))
                 if character_diff < 0.5:
                     self.model.friends[i][j] = 1
-                    self.model.interactions[i][j] += 1
+                    self.model.friends_score[i][j] += 1
                     self.interaction = True
+                self.model.interactions[i][j] += 1
                 break
 
     def create_trip(self):

@@ -46,7 +46,10 @@ def non_overlapping_path(steps, path, bounds):
         new_path = deepcopy(path)
         new_path.append(move)
         not_overlapping = not does_overlap(new_path)
-        in_bounds = not out_of_bounds(new_path, bounds)
+        if bounds:
+            in_bounds = not out_of_bounds(new_path, bounds)
+        else:
+            in_bounds = True
         if not_overlapping and in_bounds:
             try_remaining = deepcopy(remaining)
             try_remaining.remove(move)
@@ -106,6 +109,8 @@ def out_of_bounds(path, bounds):
             pos[0] + step[0],
             pos[1] + step[1]
         ]
+        # x_out = not (bounds[0][0] <= pos[0] <= bounds[1][0])
+        # y_out = not (bounds[0][1] <= pos[1] <= bounds[1][1])
         x_out = pos[0] < bounds[0][0] or pos[0] > bounds[1][0]
         y_out = pos[1] < bounds[0][1] or pos[1] > bounds[1][1]
         if x_out or y_out:

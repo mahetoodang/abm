@@ -31,7 +31,7 @@ class Friends(Model):
         # Add a schedule
         self.schedule = RandomActivation(self)
 
-        self.grid = MultiGrid(self.width, self.height, torus=True)
+        self.grid = MultiGrid(self.width, self.height, torus=False)
         self.data_collector = DataCollector({
             "Friends": lambda m: np.count_nonzero(self.friends.values),
             "Interactions": lambda m: np.sum(self.interactions.values)

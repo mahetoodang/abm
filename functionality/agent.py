@@ -14,6 +14,21 @@ class Human(Agent):
         self.interaction = False
         self.path = []
 
+    def step(self):
+        if self.is_home():
+            self.create_trip()
+        if self.interaction and len(self.path):
+            self.move()
+        else:
+            if not len(self.path):
+                self.go_home()
+
+        if not self.interaction:
+            self.interact_with_neighbors()
+
+        if not self.interaction and len(self.path):
+            self.move()
+
     def get_pos(self):
         return self.pos
 
@@ -60,26 +75,10 @@ class Human(Agent):
 
         return avg_score, avg_social, avg_spatial, count
 
-    def step(self):
-        if self.is_home():
-            self.create_trip()
-        if self.interaction and len(self.path):
-            self.move()
-        else:
-            if not len(self.path):
-                self.go_home()
-
-        if not self.interaction:
-            self.interact_with_neighbors()
-
-        if not self.interaction and len(self.path):
-            self.move()
-
     def interact_with_neighbors(self):
         neighbors = self.model.grid.get_neighbors(self.pos, True, include_center=True, radius=0)
         for neighbor in neighbors:
             if self.unique_id != neighbor.unique_id:
-
 
                 # only the upper part of matrix is used, thus the ordering of indexes
                 i = np.max([self.unique_id, neighbor.unique_id])
@@ -88,7 +87,6 @@ class Human(Agent):
                 # social distance & suitability
                 character_dist = abs(self.character - neighbor.character)
                 suitability = 1 - np.abs(character_dist)
-                ##print(suitability)
                 if random.uniform(0, 0.6) < suitability:
                     self.model.friends[i][j] = 1
                     self.model.friends_score[i][j] += 1 + random.random() * suitability
@@ -97,20 +95,23 @@ class Human(Agent):
                 break
 
     def create_trip(self):
+        bounds = self.get_relative_bounds()
         min_travel = 5
         trip_length = np.random.randint(min_travel, self.max_travel)
-        x_len = np.random.randint(0, trip_length)
-        y_len = trip_length - x_len
-        x_dir = 1 if random.random() < 0.5 else -1
-        y_dir = 1 if random.random() < 0.5 else -1
-        destination = [x_dir * x_len, y_dir * y_len]
-        path = find_path([0, 0], destination, trip_length + 2)
+        possible_trips = self.find_manhattan_neighbors(trip_length)
+        chosen_trip = random.choice(possible_trips)
+        destination = [
+            chosen_trip[0] - self.pos[0],
+            chosen_trip[1] - self.pos[1]
+        ]
+        path = find_path([0, 0], destination, trip_length + 2, bounds)
         self.path = path
 
     def go_home(self):
+        bounds = self.get_relative_bounds()
         destination = self.relative_home_location()
         trip_length = np.abs(destination[0]) + np.abs(destination[1])
-        path = find_path([0, 0], destination, trip_length + 2)
+        path = find_path([0, 0], destination, trip_length + 2, bounds)
         self.path = path
 
     def has_friends(self):
@@ -132,12 +133,50 @@ class Human(Agent):
         return [x, y]
 
     def move(self):
-        move = self.path.pop()
+        move = self.path.pop(0)
         new_pos = (
             self.pos[0] + move[0],
             self.pos[1] + move[1]
         )
         self.model.grid.move_agent(self, new_pos)
+
+    def get_relative_bounds(self):
+        # returns [ [min_x, min_y], [max_x, max_y] ]
+        # showing the moving limits of the agents
+        [min_x, min_y] = [0, 0]
+        [max_x, max_y] = [self.model.grid.width-1, self.model.grid.height-1]
+        pos = self.pos
+        bounds = [
+            [min_x - pos[0], min_y - pos[1]],
+            [max_x - pos[0], max_y - pos[1]]
+        ]
+        return bounds
+
+    def find_manhattan_neighbors(self, radius):
+        # constructs all possible destinations given manhattan radius
+        neighborhood = []
+        for i in range(radius+1):
+            if i != 0:
+                neighborhood.append([i, radius - i])
+                neighborhood.append([-i, radius - i])
+                if (radius - i) != 0:
+                    neighborhood.append([i, -(radius - i)])
+                    neighborhood.append([-i, -(radius - i)])
+            else:
+                neighborhood.append([i, radius - i])
+                neighborhood.append([i, -(radius - i)])
+        # translates relative coordinates to world coordinates and
+        # filters out the ones that are out of bounds
+        pos = self.pos
+        [max_x, max_y] = [self.model.grid.width-1, self.model.grid.height-1]
+        neighbors = []
+        for n in neighborhood:
+            p = [n[0] + pos[0], n[1] + pos[1]]
+            x_in = 0 <= p[0] <= max_x
+            y_in = 0 <= p[1] <= max_y
+            if x_in and y_in:
+                neighbors.append(p)
+        return neighbors
 
     def random_move(self):
         grid = self.model.grid

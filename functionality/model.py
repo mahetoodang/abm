@@ -39,7 +39,7 @@ class Friends(Model):
 
         # Create the population
         self.M = nx.Graph()
-        self.init_population(self.population_size)
+        self.init_population()
 
         self.friends = self.init_matrix()
         self.interactions = self.init_matrix()
@@ -49,11 +49,19 @@ class Friends(Model):
         self.running = True
         self.data_collector.collect(self)
 
-    def init_population(self, n):
-        for i in range(n):
+    def init_population(self):
+        speed_dist = [0.6, 0.3, 0.1]
+        for i in range(self.population_size):
+            choice = np.random.random()
+            if choice < speed_dist[0]:
+                speed = 1
+            elif choice < speed_dist[0] + speed_dist[1]:
+                speed = 2
+            else:
+                speed = 3
             x = random.randrange(self.width)
             y = random.randrange(self.height)
-            self.new_agent((x, y))
+            self.new_agent((x, y), speed)
 
     def init_matrix(self):
         agents = self.schedule.agents
@@ -62,15 +70,15 @@ class Friends(Model):
         mat = pd.DataFrame(np.zeros((n, n)), index=ids, columns=ids)
         return mat
 
-    def new_agent(self, pos):
+    def new_agent(self, pos, speed):
         agent_id = self.next_id()
-        agent = Human(agent_id, self, pos)
+        agent = Human(agent_id, self, pos, speed)
         self.grid.place_agent(agent, pos)
         self.schedule.add(agent)
 
         #ID and initial pos also used for node graph
         M = nx.Graph()
-        M.add_node((agent_id-1), pos=pos)
+        M.add_node((agent_id-1), pos=pos, speed=speed)
         self.M = nx.compose(self.M, M)
 
     def step(self):

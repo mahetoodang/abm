@@ -10,15 +10,35 @@ def visualize_network(M, graph):
             if scores[j][t] != 0:
                 M.add_edge(j, t, weight=scores[j][t])
 
-    close = [(u, v) for (u, v, d) in M.edges(data=True) if d['weight'] < 0.3]
-    mid = [(u, v) for (u, v, d) in M.edges(data=True) if d['weight'] > 0.3 and d['weight'] < 0.6]
-    far = [(u, v) for (u, v, d) in M.edges(data=True) if d['weight'] >= 0.6]
+    # agents
+    slow = {idx: data['pos'] for (idx, data) in M.nodes(data=True) if data['speed'] == 1}
+    moderate = {idx: data['pos'] for (idx, data) in M.nodes(data=True) if data['speed'] == 2}
+    fast = {idx: data['pos'] for (idx, data) in M.nodes(data=True) if data['speed'] == 3}
 
     nx.draw_networkx_nodes(
         M,
         nx.get_node_attributes(M, 'pos'),
-        node_size=80, node_color='dimgrey'
+        nodelist=slow, node_size=50,
+        node_color='gray'
     )
+    nx.draw_networkx_nodes(
+        M,
+        nx.get_node_attributes(M, 'pos'),
+        nodelist=moderate, node_size=50,
+        node_color='yellow'
+    )
+    nx.draw_networkx_nodes(
+        M,
+        nx.get_node_attributes(M, 'pos'),
+        nodelist=fast, node_size=50,
+        node_color='red'
+    )
+
+    # connections between agents
+    close = [(u, v) for (u, v, d) in M.edges(data=True) if d['weight'] < 0.3]
+    mid = [(u, v) for (u, v, d) in M.edges(data=True) if 0.3 < d['weight'] < 0.6]
+    far = [(u, v) for (u, v, d) in M.edges(data=True) if d['weight'] >= 0.6]
+
     nx.draw_networkx_edges(
         M,
         nx.get_node_attributes(M, 'pos'),

@@ -1,14 +1,17 @@
 from mesa import Agent
 import random
 import numpy as np
-import math
+
 from .path_finder import find_path
 
+
 class Human(Agent):
-    def __init__(self, unique_id, model, pos):
+    def __init__(self, unique_id, model, pos, speed):
         super().__init__(unique_id, model)
         self.pos = pos
         self.home = pos
+        self.max_travel_time = np.random.randint(5, 10)
+        self.speed = speed
         self.max_travel = np.random.randint(9, 14)
         self.character = random.random()
         self.interaction = False
@@ -44,9 +47,9 @@ class Human(Agent):
                 friends.append(agent)
         return friends
 
-    def get_distance(self, friend_pos):
-        # returns euclidean distance to friend position
-        return math.sqrt((self.pos[0] - friend_pos[0])**2 + (self.pos[1] - friend_pos[1])**2)
+    def get_distance(self, point):
+        # returns manhattan distance to point
+        return np.abs(self.pos[0] - point[0]) + np.abs(self.pos[1] - point[1])
 
     def get_avg(self):
         friends = self.get_friends()
@@ -96,15 +99,18 @@ class Human(Agent):
 
     def create_trip(self):
         bounds = self.get_relative_bounds()
-        min_travel = 5
-        trip_length = np.random.randint(min_travel, self.max_travel)
-        possible_trips = self.find_manhattan_neighbors(trip_length)
-        chosen_trip = random.choice(possible_trips)
-        destination = [
-            chosen_trip[0] - self.pos[0],
-            chosen_trip[1] - self.pos[1]
-        ]
-        path = find_path([0, 0], destination, trip_length + 2, bounds)
+        min_travel_time = 1
+        path = False
+        while not path:
+            trip_time = np.random.randint(min_travel_time, self.max_travel_time)
+            trip_length = self.speed * trip_time
+            possible_trips = self.find_manhattan_neighbors(trip_length)
+            chosen_trip = random.choice(possible_trips)
+            destination = [
+                chosen_trip[0] - self.pos[0],
+                chosen_trip[1] - self.pos[1]
+            ]
+            path = find_path([0, 0], destination, trip_length + 2, bounds)
         self.path = path
 
     def go_home(self):
@@ -133,12 +139,18 @@ class Human(Agent):
         return [x, y]
 
     def move(self):
-        move = self.path.pop(0)
-        new_pos = (
-            self.pos[0] + move[0],
-            self.pos[1] + move[1]
-        )
-        self.model.grid.move_agent(self, new_pos)
+        i = 0
+        while i < self.speed:
+            if len(self.path):
+                move = self.path.pop(0)
+                new_pos = (
+                    self.pos[0] + move[0],
+                    self.pos[1] + move[1]
+                )
+                self.model.grid.move_agent(self, new_pos)
+                i += 1
+            else:
+                break
 
     def get_relative_bounds(self):
         # returns [ [min_x, min_y], [max_x, max_y] ]

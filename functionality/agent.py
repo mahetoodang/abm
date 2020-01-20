@@ -92,7 +92,9 @@ class Human(Agent):
                 suitability = 1 - np.abs(character_dist)
                 if random.uniform(0, 0.6) < suitability:
                     self.model.friends[i][j] = 1
-                    self.model.friends_score[i][j] += 1 + random.random() * suitability
+                    rand_suit = random.random() * suitability
+                    self.model.friends_score[i][j] += 1 + rand_suit
+                    self.model.friends_score[j][i] += 1 + rand_suit
 
                 self.model.interactions[i][j] += 1
                 break

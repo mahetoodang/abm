@@ -9,11 +9,11 @@ def create_model_report():
 
     profile = ProfileReport(df, title="30 Agent Model")
 
-    model_report_name = 'model_report' + '.html'
+    output_file = 'data/html/model_report.html'
 
-    profile.to_file(output_file="model_report.html")
+    profile.to_file(output_file=output_file)
 
-    model_report_path = os.getcwd() + '/' + model_report_name
+    model_report_path = os.getcwd() + '/' + output_file
 
     new = 2 # open in a new tab, if possible
 

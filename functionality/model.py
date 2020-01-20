@@ -19,7 +19,7 @@ class Friends(Model):
     def __init__(
             self,
             height=20, width=20,
-            population_size=10
+            population_size=30
     ):
 
         super().__init__()
@@ -94,16 +94,23 @@ class Friends(Model):
             # once every 5 steps
             if i % 10 == 0:
                  self.friends_score = self.friends_score * 0.99
-        print(self.friends_score)
+        #print(self.friends_score)
+
+        sim_stats = pd.DataFrame()
 
         for agent in self.schedule.agents:
             score, social, spatial, count = agent.get_avg()
-            print('id: :' + str(agent.unique_id))
-            print('#: ' + str(count))
-            print('friends score: ' + str(score))
-            print('avg. social distance: ' + str(social))
-            print('avg. spatial distance: ' + str(spatial))
-            print()
+            stats = dict(
+                agent_id = agent.unique_id, 
+                friend_count = count, 
+                avg_friend_score = score, 
+                avg_social_dist = social, 
+                avg_spatial_dist = spatial)
+            
+            sim_stats = sim_stats.append(stats, ignore_index=True)
+        
+        file_string = 'data/' + 'sim_stats_' + str(self.population_size) + 'agents.csv'
 
-        return self.friends_score
-        #self.store(self.friends_score, False)
+        sim_stats.to_csv(file_string)
+        
+        #return self.friends_score

@@ -99,6 +99,7 @@ class Friends(Model):
         sim_stats = pd.DataFrame()
 
         for agent in self.schedule.agents:
+            nx.set_node_attributes(self.M, {(agent.unique_id-1):{'character':agent.character}})
             score, social, spatial, count = agent.get_avg()
             stats = dict(
                 agent_id = agent.unique_id, 

@@ -127,8 +127,14 @@ def friends_speed_histogram(M):
 
     bins = np.arange(max_dist)
 
-    plt.hist([fast, moderate, slow], bins, stacked=True, color=["red", "blue", "violet"], density=True)
-    plt.legend({'slow': "red", 'moderate': "blue", 'fast': "violet"}, title="Speed")
-    plt.xlabel("Distance of friends", fontsize=16)
-    plt.ylabel("Proportion of friends", fontsize=16)
+    fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(9, 4))
+    [ax1, ax2, ax3] = ax
+    ax1.hist(slow, bins, color="violet", density=True)
+    ax2.hist(moderate, bins, color="blue", density=True)
+    ax3.hist(fast, bins, color="red", density=True)
+    ax1.title.set_text('Slow')
+    ax2.title.set_text('Moderate')
+    ax3.title.set_text('Fast')
+    plt.setp(ax, ylim=(0, 1), xlabel="Distance to friend", ylabel="Proportion of friends")
+    plt.tight_layout()
     plt.show()

@@ -10,15 +10,14 @@ import pandas as pd
 def main(iterations, loop):
     
     all_dfs=[]
+    friends = Friends()
     
     if loop == True:
         for i in range(iterations):
-            friends = Friends()
             iteration_df = friends.run_model(iterating=True)
             all_dfs.append(iteration_df)
      
     else:
-        friends = Friends()
         friends.run_model()
         df = friends.data_collector.get_model_vars_dataframe()
         visualize_network(friends.M, friends.friends_score)
@@ -36,4 +35,4 @@ def main(iterations, loop):
 
 
 if __name__ == '__main__':
-    main(iterations=2, loop=True) # set loop to true to run model multiple times
+    main(iterations=100, loop=True) # set loop to true to run model multiple times

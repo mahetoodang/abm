@@ -10,7 +10,7 @@ def main():
     visualize_network(friends.M, friends.friends_score)
     print("Number of pairs of friends: ", df['Friends'].iloc[-1])
     print("Number of interactions: ", df['Interactions'].iloc[-1])
-    create_model_report()
+    create_model_report(html_report=False) # set to True if you want html report else False
 
 
 

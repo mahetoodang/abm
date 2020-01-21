@@ -116,4 +116,3 @@ class Friends(Model):
 
         file_name = 'data/' + 'sim_stats_' + str(self.population_size) + 'agents.csv'
         create_sim_stats(self.schedule, self.M, file_name)
-gi

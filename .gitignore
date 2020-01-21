@@ -1,6 +1,5 @@
 # General
 /env
-/.venv
 /__pycache__
 */__pycache__
 *.pyc
@@ -8,3 +7,6 @@
 # Herman
 .idea
 .DS_Store
+
+#Francesca
+/.venv

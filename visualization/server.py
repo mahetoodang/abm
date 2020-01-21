@@ -2,9 +2,7 @@ from mesa.visualization.modules import CanvasGrid
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.UserParam import UserSettableParameter
 from mesa.visualization.modules import ChartModule
-
-
-
+from matplotlib import cm, colors
 import sys
 sys.path.append('../')
 
@@ -14,47 +12,40 @@ from functionality.cell import Cell
 
 
 model_params = {
-    "population_size": UserSettableParameter('slider', 'population_size', 1, 1, 500),
-    "segregation": UserSettableParameter('slider', 'segregation', 1, 1, 3)
+    "population_size": UserSettableParameter('slider', 'Population size', 1, 1, 500),
+    "segregation": UserSettableParameter('slider', 'Segregation level', value=0, min_value=0, max_value=1, step=0.05),
+    "social_proximity": UserSettableParameter(
+        'slider', 'Social proximity level',
+        value=0, min_value=0, max_value=1, step=0.05
+    )
 }
+
+agent_cmap = cm.get_cmap('Greys', 255)
+cell_cmap = cm.get_cmap('YlGn', 255)
 
 
 def draw_agent(agent):
     if agent is None:
         return
 
-    '''
-    portrayal = {
-        "Filled": "true",
-        "Layer": 0,
-        "Shape": "circle",
-        "r": 0.5
-    }
-    '''
-
     portrayal = {}
 
     if type(agent) is Human:
-        if agent.has_friends():
-            portrayal["Color"] = "Red"
-        else:
-            portrayal["Color"] = "Blue"
-
+        color = colors.rgb2hex(agent_cmap(agent.character))
+        portrayal["Color"] = color
         portrayal["Filled"] = "true"
         portrayal["Layer"] = 1
         portrayal["Shape"] = "circle"
-        portrayal["r"] = 0.5
+        if agent.speed == 3:
+            portrayal["r"] = 0.6
+        elif agent.speed == 2:
+            portrayal["r"] = 0.45
+        else:
+            portrayal["r"] = 0.3
 
     elif type(agent) is Cell:
-        if agent.value < 0.25:
-            portrayal["Color"] = "#00F800"
-        elif agent.value < 0.5:
-            portrayal["Color"] = "#00AA00"
-        elif agent.value < 0.75:
-            portrayal["Color"] = "#008300"
-        else:
-            portrayal["Color"] = "#005C00"
-
+        color = colors.rgb2hex(cell_cmap(agent.value))
+        portrayal["Color"] = color
         portrayal["Shape"] = "rect"
         portrayal["Filled"] = "true"
         portrayal["Layer"] = 0

@@ -11,8 +11,8 @@ from mesa.time import RandomActivation
 from .agent import Human, Cell
 from .helpers import \
     choose_speed, \
-    create_segregation_centers, \
     create_sim_stats
+from .schelling import SchellingModel
 
 
 class Friends(Model):
@@ -23,8 +23,9 @@ class Friends(Model):
     def __init__(
             self,
             height=20, width=20,
-            population_size=40,
-            segregation=1
+            population_size=100,
+            segregation=0.3,
+            social_proximity=0.2
     ):
 
         super().__init__()
@@ -44,7 +45,7 @@ class Friends(Model):
 
         # Create the population
         self.M = nx.Graph()
-        self.init_population(segregation)
+        self.init_population(segregation, social_proximity)
         self.init_cells()
 
         self.friends = self.init_matrix()
@@ -55,24 +56,23 @@ class Friends(Model):
         self.running = True
         self.data_collector.collect(self)
 
-    def init_population(self, segregation=1):
+    def init_population(self, segregation, social_proximity):
         speed_dist = [0.6, 0.3, 0.1]
-        if segregation > 1:
-            placements = create_segregation_centers(segregation, self.width, self.height)
-            for i in range(len(placements)):
-                for j in range(int(self.population_size / segregation)):
-                    speed = choose_speed(speed_dist)
-                    x = placements[i][0] + np.random.randint(-3,3)
-                    y = placements[i][1] + np.random.randint(-3,3)
-                    character = i/len(placements) + 1/len(placements) * np.random.random()
-                    self.new_agent((x, y), speed, character)
-        else:
-            for i in range(self.population_size):
-                speed = choose_speed(speed_dist)
-                x = random.randrange(self.width)
-                y = random.randrange(self.height)
-                character = np.random.random()
-                self.new_agent((x, y), speed, character)
+        schelling = SchellingModel(
+            self.height, self.width,
+            segregation,
+            social_proximity,
+            self.population_size
+        )
+        for i in range(200):
+            schelling.step()
+            if not schelling.running:
+                break
+        for ag in schelling.schedule.agents:
+            speed = choose_speed(speed_dist)
+            [x, y] = ag.pos
+            character = ag.character
+            self.new_agent((x, y), speed, character)
 
     def init_cells(self):
         # Initialize cell values

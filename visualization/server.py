@@ -14,7 +14,8 @@ from functionality.cell import Cell
 
 
 model_params = {
-    "population_size": UserSettableParameter('slider', 'population_size', 1, 1, 500)
+    "population_size": UserSettableParameter('slider', 'population_size', 1, 1, 500),
+    "segregation": UserSettableParameter('slider', 'segregation', 1, 1, 3)
 }
 
 

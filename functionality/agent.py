@@ -7,14 +7,14 @@ from .cell import Cell
 
 
 class Human(Agent):
-    def __init__(self, unique_id, model, pos, speed):
+    def __init__(self, unique_id, model, pos, character, speed):
         super().__init__(unique_id, model)
         self.pos = pos
         self.home = pos
         self.max_travel_time = np.random.randint(5, 10)
         self.speed = speed
         self.max_travel = np.random.randint(9, 14)
-        self.character = random.random()
+        self.character = character
         self.interaction = False
         self.path = []
 

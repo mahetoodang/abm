@@ -111,16 +111,17 @@ class Friends(Model):
         sim_stats = pd.DataFrame()
 
         for agent in self.schedule.agents:
-            nx.set_node_attributes(self.M, {(agent.unique_id-1):{'character':agent.character}})
-            score, social, spatial, count = agent.get_avg()
-            stats = dict(
-                agent_id = agent.unique_id,
-                friend_count = count,
-                avg_friend_score = score,
-                avg_social_dist = social,
-                avg_spatial_dist = spatial)
+            if type(agent) is Human:
+                nx.set_node_attributes(self.M, {(agent.unique_id-1):{'character':agent.character}})
+                score, social, spatial, count = agent.get_avg()
+                stats = dict(
+                    agent_id = agent.unique_id,
+                    friend_count = count,
+                    avg_friend_score = score,
+                    avg_social_dist = social,
+                    avg_spatial_dist = spatial)
 
-            sim_stats = sim_stats.append(stats, ignore_index=True)
+                sim_stats = sim_stats.append(stats, ignore_index=True)
 
         file_string = 'data/' + 'sim_stats_' + str(self.population_size) + 'agents.csv'
 

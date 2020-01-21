@@ -3,6 +3,7 @@ import random
 import numpy as np
 
 from .path_finder import find_path
+from .cell import Cell
 
 
 class Human(Agent):
@@ -11,7 +12,7 @@ class Human(Agent):
         self.pos = pos
         self.home = pos
         self.max_travel_time = np.random.randint(5, 10)
-        self.speed = speed        
+        self.speed = speed
         self.max_travel = np.random.randint(9, 14)
         self.character = random.random()
         self.interaction = False
@@ -81,7 +82,7 @@ class Human(Agent):
     def interact_with_neighbors(self):
         neighbors = self.model.grid.get_neighbors(self.pos, True, include_center=True, radius=0)
         for neighbor in neighbors:
-            if self.unique_id != neighbor.unique_id:
+            if self.unique_id != neighbor.unique_id and type(neighbor) is Human:
 
                 # only the upper part of matrix is used, thus the ordering of indexes
                 i = np.max([self.unique_id, neighbor.unique_id])
@@ -96,9 +97,19 @@ class Human(Agent):
                     self.model.friends_score[i][j] += 1 + rand_suit
                     self.model.friends_score[j][i] += 1 + rand_suit
 
+                    # Update cell values
+                    cell = self.get_cell()
+                    cell.update(self.character, neighbor.character)
+
                 self.model.interactions[i][j] += 1
                 break
 
+    def get_cell(self):
+        # Get cell for current position
+        this_cell = self.model.grid.get_cell_list_contents([self.pos])
+        for agent in this_cell:
+            if type(agent) is Cell:
+                return agent
     def create_trip(self):
         bounds = self.get_relative_bounds()
         min_travel_time = 1

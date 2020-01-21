@@ -9,6 +9,7 @@ from mesa.datacollection import DataCollector
 from mesa.time import RandomActivation
 
 from .agent import Human
+from .agent import Cell
 
 
 class Friends(Model):
@@ -40,6 +41,7 @@ class Friends(Model):
         # Create the population
         self.M = nx.Graph()
         self.init_population()
+        self.init_cells()
 
         self.friends = self.init_matrix()
         self.interactions = self.init_matrix()
@@ -62,6 +64,16 @@ class Friends(Model):
             x = random.randrange(self.width)
             y = random.randrange(self.height)
             self.new_agent((x, y), speed)
+
+    def init_cells(self):
+        # Innitialize cell values
+        #TODO: use new_agent()
+        for _, x, y in self.grid.coord_iter():
+            agent_id = self.next_id()
+            cell = Cell(agent_id, self, (x, y))
+            self.grid.place_agent(cell, (x, y))
+            self.schedule.add(cell)
+
 
     def init_matrix(self):
         agents = self.schedule.agents
@@ -102,16 +114,16 @@ class Friends(Model):
             nx.set_node_attributes(self.M, {(agent.unique_id-1):{'character':agent.character}})
             score, social, spatial, count = agent.get_avg()
             stats = dict(
-                agent_id = agent.unique_id, 
-                friend_count = count, 
-                avg_friend_score = score, 
-                avg_social_dist = social, 
+                agent_id = agent.unique_id,
+                friend_count = count,
+                avg_friend_score = score,
+                avg_social_dist = social,
                 avg_spatial_dist = spatial)
-            
+
             sim_stats = sim_stats.append(stats, ignore_index=True)
-        
+
         file_string = 'data/' + 'sim_stats_' + str(self.population_size) + 'agents.csv'
 
         sim_stats.to_csv(file_string)
-        
+
         #return self.friends_score

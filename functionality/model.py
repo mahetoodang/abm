@@ -8,7 +8,7 @@ from mesa.space import MultiGrid
 from mesa.datacollection import DataCollector
 from mesa.time import RandomActivation
 
-from .agent import Human
+from .agent import Human, Cell
 from .helpers import \
     choose_speed, \
     create_segregation_centers, \
@@ -44,6 +44,7 @@ class Friends(Model):
         # Create the population
         self.M = nx.Graph()
         self.init_population(1)
+        self.init_cells()
 
         self.friends = self.init_matrix()
         self.interactions = self.init_matrix()
@@ -71,6 +72,14 @@ class Friends(Model):
                 y = random.randrange(self.height)
                 character = np.random.random()
                 self.new_agent((x, y), speed, character)
+
+    def init_cells(self):
+        # Initialize cell values
+        for _, x, y in self.grid.coord_iter():
+            agent_id = self.next_id()
+            cell = Cell(agent_id, self, (x, y))
+            self.grid.place_agent(cell, (x, y))
+
 
     def init_matrix(self):
         agents = self.schedule.agents
@@ -103,6 +112,6 @@ class Friends(Model):
             # once every 5 steps
             if i % 10 == 0:
                  self.friends_score = self.friends_score * 0.99
-        
+
         file_name = 'data/' + 'sim_stats_' + str(self.population_size) + 'agents.csv'
         create_sim_stats(self.schedule, self.M, file_name)

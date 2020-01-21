@@ -23,7 +23,8 @@ class Friends(Model):
     def __init__(
             self,
             height=20, width=20,
-            population_size=40
+            population_size=40,
+            segregation=1
     ):
 
         super().__init__()
@@ -43,7 +44,7 @@ class Friends(Model):
 
         # Create the population
         self.M = nx.Graph()
-        self.init_population(1)
+        self.init_population(segregation)
         self.init_cells()
 
         self.friends = self.init_matrix()

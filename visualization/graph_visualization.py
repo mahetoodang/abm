@@ -59,36 +59,76 @@ def visualize_network(M, graph):
     plt.axes().set_aspect('equal')
     plt.show()
 
-    #creating stacked histogram
-    A = list(M.edges())
-    #need to get farthest distance (right now 25ish) automatically
-    maxdist = 30
-    close = np.zeros(maxdist)
-    mid = np.zeros(maxdist)
-    far = np.zeros(maxdist)
-    character = nx.get_node_attributes(M,'character')
-    pos = nx.get_node_attributes(M,'pos')
+
+def distance_vs_number_histogram(M):
+    # creating stacked histogram
+    edges = list(M.edges())
+    # need to get farthest distance (right now 25ish) automatically
+    max_dist = 30
+    close = np.zeros(max_dist)
+    mid = np.zeros(max_dist)
+    far = np.zeros(max_dist)
+    character = nx.get_node_attributes(M, 'character')
+    pos = nx.get_node_attributes(M, 'pos')
     
-    for i in range(len(M.edges())):
-        p1 = A[i][0] 
-        p2 = A[i][1]
-        dist = abs(pos[p1][0]- pos[p2][0]) + abs(pos[p1][1]- pos[p2][1])
+    for i in range(len(edges)):
+        p1 = edges[i][0]
+        p2 = edges[i][1]
+        dist = abs(pos[p1][0] - pos[p2][0]) + abs(pos[p1][1] - pos[p2][1])
+        # max_dist = np.max([max_dist, dist])
         index = int(dist)
-        if abs(character[A[i][0]]-character[A[i][1]]) < 0.3:
+        if abs(character[edges[i][0]] - character[edges[i][1]]) < 0.3:
             close[index] += 1
-        elif abs(character[A[i][0]]-character[A[i][1]]) < 0.6:
+        elif abs(character[edges[i][0]] - character[edges[i][1]]) < 0.6:
             mid[index] += 1
-        else :
+        else:
             far[index] += 1
             
-    bins = np.arange(maxdist)
+    bins = np.arange(max_dist)
 
-    plt.hist(bins,maxdist, weights=close, stacked=True, label='similar')
-    plt.hist(bins,maxdist, weights=mid, stacked=True,label ='not so similar' )
-    plt.hist(bins,maxdist, weights=far, stacked=True, label = "not similar at all")
+    plt.hist(bins, max_dist, weights=close, stacked=True, label='similar')
+    plt.hist(bins, max_dist, weights=mid, stacked=True, label='not so similar' )
+    plt.hist(bins, max_dist, weights=far, stacked=True, label="not similar at all")
     plt.legend(title="Similarity of Friends")
     plt.xlabel("Distance of friends", fontsize=16)  
     plt.ylabel("Number of friends", fontsize=16)
     plt.show()
 
 
+def friends_speed_histogram(M):
+    # creating stacked histogram
+    edges = list(M.edges())
+    # need to get farthest distance (right now 25ish) automatically
+    max_dist = 30
+    slow = np.zeros(max_dist)
+    moderate = np.zeros(max_dist)
+    fast = np.zeros(max_dist)
+    speeds = nx.get_node_attributes(M, 'speed')
+    pos = nx.get_node_attributes(M, 'pos')
+
+    for i in range(len(edges)):
+        p1 = edges[i][0]
+        p2 = edges[i][1]
+        dist = abs(pos[p1][0] - pos[p2][0]) + abs(pos[p1][1] - pos[p2][1])
+        index = int(dist)
+        if speeds[p1] == 1:
+            slow[index] += 1
+        elif speeds[p1] == 2:
+            moderate[index] += 1
+        else:
+            fast[index] += 1
+
+        if speeds[p2] == 1:
+            slow[index] += 1
+        elif speeds[p2] == 2:
+            moderate[index] += 1
+        else:
+            fast[index] += 1
+
+    bins = np.arange(max_dist)
+
+    plt.hist([fast, moderate, slow], bins, stacked=True, color=["red", "blue", "violet"], density=True)
+    plt.legend({'slow': "red", 'moderate': "blue", 'fast': "violet"}, title="Speed")
+    plt.xlabel("Distance of friends", fontsize=16)
+    plt.ylabel("Proportion of friends", fontsize=16)
+    plt.show()

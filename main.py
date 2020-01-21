@@ -35,4 +35,4 @@ def main(iterations, loop):
 
 
 if __name__ == '__main__':
-    main(iterations=100, loop=True) # set loop to true to run model multiple times
+    main(iterations=100, loop=False) # set loop to true to run model multiple times

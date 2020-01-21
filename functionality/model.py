@@ -8,7 +8,11 @@ from mesa.space import MultiGrid
 from mesa.datacollection import DataCollector
 from mesa.time import RandomActivation
 
-from .agent import Human
+from .agent import Human, Cell
+from .helpers import \
+    choose_speed, \
+    create_segregation_centers, \
+    create_sim_stats
 
 
 class Friends(Model):
@@ -19,7 +23,8 @@ class Friends(Model):
     def __init__(
             self,
             height=20, width=20,
-            population_size=30
+            population_size=40,
+            segregation=1
     ):
 
         super().__init__()
@@ -39,7 +44,8 @@ class Friends(Model):
 
         # Create the population
         self.M = nx.Graph()
-        self.init_population()
+        self.init_population(segregation)
+        self.init_cells()
 
         self.friends = self.init_matrix()
         self.interactions = self.init_matrix()
@@ -49,19 +55,32 @@ class Friends(Model):
         self.running = True
         self.data_collector.collect(self)
 
-    def init_population(self):
+    def init_population(self, segregation=1):
         speed_dist = [0.6, 0.3, 0.1]
-        for i in range(self.population_size):
-            choice = np.random.random()
-            if choice < speed_dist[0]:
-                speed = 1
-            elif choice < speed_dist[0] + speed_dist[1]:
-                speed = 2
-            else:
-                speed = 3
-            x = random.randrange(self.width)
-            y = random.randrange(self.height)
-            self.new_agent((x, y), speed)
+        if segregation > 1:
+            placements = create_segregation_centers(segregation, self.width, self.height)
+            for i in range(len(placements)):
+                for j in range(int(self.population_size / segregation)):
+                    speed = choose_speed(speed_dist)
+                    x = placements[i][0] + np.random.randint(-3,3)
+                    y = placements[i][1] + np.random.randint(-3,3)
+                    character = i/len(placements) + 1/len(placements) * np.random.random()
+                    self.new_agent((x, y), speed, character)
+        else:
+            for i in range(self.population_size):
+                speed = choose_speed(speed_dist)
+                x = random.randrange(self.width)
+                y = random.randrange(self.height)
+                character = np.random.random()
+                self.new_agent((x, y), speed, character)
+
+    def init_cells(self):
+        # Initialize cell values
+        for _, x, y in self.grid.coord_iter():
+            agent_id = self.next_id()
+            cell = Cell(agent_id, self, (x, y))
+            self.grid.place_agent(cell, (x, y))
+
 
     def init_matrix(self):
         agents = self.schedule.agents
@@ -70,9 +89,9 @@ class Friends(Model):
         mat = pd.DataFrame(np.zeros((n, n)), index=ids, columns=ids)
         return mat
 
-    def new_agent(self, pos, speed):
+    def new_agent(self, pos, speed, character):
         agent_id = self.next_id()
-        agent = Human(agent_id, self, pos, speed)
+        agent = Human(agent_id, self, pos, character, speed)
         self.grid.place_agent(agent, pos)
         self.schedule.add(agent)
 
@@ -94,24 +113,7 @@ class Friends(Model):
             # once every 5 steps
             if i % 10 == 0:
                  self.friends_score = self.friends_score * 0.99
-        #print(self.friends_score)
 
-        sim_stats = pd.DataFrame()
-
-        for agent in self.schedule.agents:
-            nx.set_node_attributes(self.M, {(agent.unique_id-1):{'character':agent.character}})
-            score, social, spatial, count = agent.get_avg()
-            stats = dict(
-                agent_id = agent.unique_id, 
-                friend_count = count, 
-                avg_friend_score = score, 
-                avg_social_dist = social, 
-                avg_spatial_dist = spatial)
-            
-            sim_stats = sim_stats.append(stats, ignore_index=True)
-        
-        file_string = 'data/' + 'sim_stats_' + str(self.population_size) + 'agents.csv'
-
-        sim_stats.to_csv(file_string)
-        
-        #return self.friends_score
+        file_name = 'data/' + 'sim_stats_' + str(self.population_size) + 'agents.csv'
+        create_sim_stats(self.schedule, self.M, file_name)
+gi

@@ -109,10 +109,6 @@ class Friends(Model):
         for i in range(step_count):
             self.step()
 
-            # once every 5 steps
-            if i % 10 == 0:
-                 self.friends_score = self.friends_score * 0.99
-
         file_name = 'data/' + 'sim_stats_' + str(self.population_size) + 'agents.csv'
 
         if iterating:

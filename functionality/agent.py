@@ -3,17 +3,18 @@ import random
 import numpy as np
 
 from .path_finder import find_path
+from .cell import Cell
 
 
 class Human(Agent):
-    def __init__(self, unique_id, model, pos, speed):
+    def __init__(self, unique_id, model, pos, character, speed):
         super().__init__(unique_id, model)
         self.pos = pos
         self.home = pos
         self.max_travel_time = np.random.randint(5, 10)
-        self.speed = speed        
+        self.speed = speed
         self.max_travel = np.random.randint(9, 14)
-        self.character = random.random()
+        self.character = character
         self.interaction = False
         self.path = []
 
@@ -81,7 +82,7 @@ class Human(Agent):
     def interact_with_neighbors(self):
         neighbors = self.model.grid.get_neighbors(self.pos, True, include_center=True, radius=0)
         for neighbor in neighbors:
-            if self.unique_id != neighbor.unique_id:
+            if self.unique_id != neighbor.unique_id and type(neighbor) is Human:
 
                 # only the upper part of matrix is used, thus the ordering of indexes
                 i = np.max([self.unique_id, neighbor.unique_id])
@@ -96,8 +97,19 @@ class Human(Agent):
                     self.model.friends_score[i][j] += 1 + rand_suit
                     self.model.friends_score[j][i] += 1 + rand_suit
 
+                    # Update cell values
+                    cell = self.get_cell()
+                    cell.update(self.character, neighbor.character)
+
                 self.model.interactions[i][j] += 1
                 break
+
+    def get_cell(self):
+        # Get cell for current position
+        this_cell = self.model.grid.get_cell_list_contents([self.pos])
+        for agent in this_cell:
+            if type(agent) is Cell:
+                return agent
 
     def create_trip(self):
         bounds = self.get_relative_bounds()
@@ -107,7 +119,38 @@ class Human(Agent):
             trip_time = np.random.randint(min_travel_time, self.max_travel_time)
             trip_length = self.speed * trip_time
             possible_trips = self.find_manhattan_neighbors(trip_length)
+
+            # Get possible destinations (cells)
+            cells = []
+            for pos in possible_trips:
+                this_cell = self.model.grid.get_cell_list_contents([pos])
+                for agent in this_cell:
+                    if type(agent) is Cell:
+                        cells.append(agent)
+
+            # Weighted random choice based on cell value
+            value_sum = sum((1- abs(self.character - cell.value)) for cell in cells)
+            w =[]
+            for cell in cells:
+                w.append((1-abs(self.character-cell.value))/value_sum)
+            selected_cell = random.choices(population=cells, weights=w, k=1)
+            chosen_trip = selected_cell[0].pos
+
+
+            '''
+            cell_values = []
+            cell_pos = []
+            for cell in cells:
+                cell_values.append(cell.value)
+                cell_pos.append(cell.pos)
+            sum = sum(cell_values)
+
+            weights = []
+            for value in cell_values:
+                weights.append(value/sum)
+
             chosen_trip = random.choice(possible_trips)
+            '''
             destination = [
                 chosen_trip[0] - self.pos[0],
                 chosen_trip[1] - self.pos[1]

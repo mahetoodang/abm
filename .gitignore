@@ -3,6 +3,9 @@
 /__pycache__
 */__pycache__
 *.pyc
+data/*
+.vscode/*
+
 
 # Herman
 .idea
@@ -10,3 +13,4 @@
 
 #Francesca
 /.venv
+

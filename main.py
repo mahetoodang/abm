@@ -3,7 +3,7 @@ import pandas as pd
 from functionality.model import Friends
 from visualization.graph_visualization import \
     visualize_network, \
-    distance_vs_number_histogram, \
+    distance_histograms, \
     friends_speed_histogram
 from visualization.model_report import create_model_report
 
@@ -26,7 +26,7 @@ def main(iterations, loop):
         friends.run_model()
         df = friends.data_collector.get_model_vars_dataframe()
         visualize_network(friends.M, friends.friends_score)
-        distance_vs_number_histogram(friends.M)
+        distance_histograms(friends.M, friends)
         friends_speed_histogram(friends.M)
         print("Number of pairs of friends: ", df['Friends'].iloc[-1])
         print("Number of interactions: ", df['Interactions'].iloc[-1])
@@ -34,4 +34,8 @@ def main(iterations, loop):
 
 
 if __name__ == '__main__':
+<<<<<<< HEAD
+    main(iterations=2, loop=False) # set loop to true to run model multiple times
+=======
     main(iterations=2, loop=True)  # set loop to true to run model multiple times
+>>>>>>> b88122d267322ea3ea564f72358406ff68a02537

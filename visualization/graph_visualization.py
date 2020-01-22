@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
+import seaborn as sns
 
 def visualize_network(M, graph):
     # to plot the nodes and edges of friendships
@@ -56,43 +57,70 @@ def visualize_network(M, graph):
     )
 
     plt.axes().set_aspect('equal')
-    plt.savefig('data/img/network_graph.png')
+    plt.savefig('data/img/Node_Graph.png')
     plt.close()
 
 
-def distance_vs_number_histogram(M):
-    # creating stacked histogram
+def distance_histograms(M, friends):
+    # creating stacked histograms 
     edges = list(M.edges())
-    # need to get farthest distance (right now 25ish) automatically
-    max_dist = 30
-    close = np.zeros(max_dist)
-    mid = np.zeros(max_dist)
-    far = np.zeros(max_dist)
+    fig4 = plt.figure(figsize=(8,5))
+    ax4 = fig4.add_subplot(111, axisbelow=True)
+    maxdist = friends.height + friends.width
+    close = np.zeros(maxdist)
+    mid = np.zeros(maxdist)
+    far = np.zeros(maxdist)
+    close2 = np.zeros(maxdist)
+    mid2 = np.zeros(maxdist)
+    far2 = np.zeros(maxdist)
     character = nx.get_node_attributes(M, 'character')
     pos = nx.get_node_attributes(M, 'pos')
-    
     for i in range(len(edges)):
         p1 = edges[i][0]
         p2 = edges[i][1]
         dist = abs(pos[p1][0] - pos[p2][0]) + abs(pos[p1][1] - pos[p2][1])
-        # max_dist = np.max([max_dist, dist])
         index = int(dist)
+        weight_friend = M[p1][p2]['weight']
         if abs(character[edges[i][0]] - character[edges[i][1]]) < 0.3:
             close[index] += 1
+            close2[index] += weight_friend
         elif abs(character[edges[i][0]] - character[edges[i][1]]) < 0.6:
             mid[index] += 1
+            mid2[index] += weight_friend
         else:
             far[index] += 1
+            far2[index] += weight_friend
             
-    bins = np.arange(max_dist)
+    bins = np.arange(maxdist)
 
-    plt.hist(bins, max_dist, weights=close, stacked=True, label='similar')
-    plt.hist(bins, max_dist, weights=mid, stacked=True, label='not so similar' )
-    plt.hist(bins, max_dist, weights=far, stacked=True, label="not similar at all")
-    plt.legend(title="Similarity of Friends")
-    plt.xlabel("Distance of friends", fontsize=16)  
-    plt.ylabel("Number of friends", fontsize=16)
-    plt.savefig('data/img/distance_hist.png')
+    ax4.hist(bins,maxdist, weights=close, stacked=True, label='similar')
+    ax4.hist(bins,maxdist, weights=mid, stacked=True,label ='not so similar' )
+    ax4.hist(bins,maxdist, weights=far, stacked=True, label = "not similar at all")
+    ax4.legend(title="Similarity of Friends")
+    ax4.set_xlabel("Spatial of Distance of friends", fontsize=16)  
+    ax4.set_ylabel("Number of friends", fontsize=16)
+    fig4.savefig('data/img/Number Friends VS Distance.png')
+    plt.close()
+
+    fig5 = plt.figure(figsize=(8,5))
+    ax5 = fig5.add_subplot(111, axisbelow=True)
+    
+    for i in range(len(far2)):
+        if close2[i] != 0:
+            close2[i] = close2[i]/close[i]
+        if mid2[i] != 0:
+            mid2[i] = mid2[i]/mid[i]
+        if far2[i] != 0:
+            far2[i] = far2[i]/far[i]
+            
+    bins = np.arange(maxdist)
+    ax5.hist(bins,maxdist, weights=close2, stacked=True, label='similar')
+    ax5.hist(bins,maxdist, weights=mid2, stacked=True,label ='not so similar' )
+    ax5.hist(bins,maxdist, weights=far2, stacked=True, label = "not similar at all")
+    ax5.legend(title="Similarity of Friends")
+    ax5.set_xlabel("Spatial of Distance of friends", fontsize=16)  
+    ax5.set_ylabel("Avg. Friend Score", fontsize=16)
+    fig5.savefig('data/img/Friend Score VS Distance.png')
     plt.close()
 
 

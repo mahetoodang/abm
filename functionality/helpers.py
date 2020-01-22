@@ -31,7 +31,7 @@ def create_segregation_centers(seg_number, width, height):
     return placements
 
 
-def create_sim_stats(schedule, M, file_name):
+def create_sim_stats(schedule, M, iterating, file_name=None):
     sim_stats = pd.DataFrame()
 
     for agent in schedule.agents:
@@ -46,4 +46,9 @@ def create_sim_stats(schedule, M, file_name):
 
         sim_stats = sim_stats.append(stats, ignore_index=True)
 
-    sim_stats.to_csv(file_name)
+    if iterating:
+        return sim_stats
+    else:
+        sim_stats.to_csv(file_name)
+    
+        

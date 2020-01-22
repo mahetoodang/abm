@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 
-
 def visualize_network(M, graph):
     # to plot the nodes and edges of friendships
     scores = graph.to_numpy()
@@ -57,7 +56,8 @@ def visualize_network(M, graph):
     )
 
     plt.axes().set_aspect('equal')
-    plt.show()
+    plt.savefig('data/img/network_graph.png')
+    plt.close()
 
 
 def distance_vs_number_histogram(M):
@@ -92,7 +92,8 @@ def distance_vs_number_histogram(M):
     plt.legend(title="Similarity of Friends")
     plt.xlabel("Distance of friends", fontsize=16)  
     plt.ylabel("Number of friends", fontsize=16)
-    plt.show()
+    plt.savefig('data/img/distance_hist.png')
+    plt.close()
 
 
 def friends_speed_histogram(M):
@@ -137,4 +138,5 @@ def friends_speed_histogram(M):
     ax3.title.set_text('Fast')
     plt.setp(ax, ylim=(0, 1), xlabel="Distance to friend", ylabel="Proportion of friends")
     plt.tight_layout()
-    plt.show()
+    plt.savefig('data/img/friend_speed.png')
+    plt.close()

@@ -49,9 +49,9 @@ class Friends(Model):
         self.init_population(segregation, social_proximity)
         self.init_cells()
 
-        self.friends = self.init_matrix()
-        self.interactions = self.init_matrix()
         self.friends_score = self.init_matrix()
+        self.interactions = self.init_matrix()
+        self.last_interaction = self.init_matrix()
 
         # This is required for the data_collector to work
         self.running = True
@@ -101,6 +101,15 @@ class Friends(Model):
 
     def step(self):
         self.schedule.step()
+        row = len(self.last_interaction)
+        col = len(self.last_interaction[0])
+
+        for i in range(row):
+            for j in range(col):
+                if self.last_interaction[i][j] > 0:
+                    self.friends_score[i][j] = self.friends_score[i][j] * 0.99
+
+        self.last_interaction += 1
 
         # Save the statistics
         self.data_collector.collect(self)

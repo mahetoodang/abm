@@ -114,28 +114,5 @@ class Friends(Model):
             if i % 10 == 0:
                  self.friends_score = self.friends_score * 0.99
 
-<<<<<<< HEAD
-        sim_stats = pd.DataFrame()
-
-        for agent in self.schedule.agents:
-            if type(agent) is Human:
-                nx.set_node_attributes(self.M, {(agent.unique_id-1):{'character':agent.character}})
-                score, social, spatial, count = agent.get_avg()
-                stats = dict(
-                    agent_id = agent.unique_id,
-                    friend_count = count,
-                    avg_friend_score = score,
-                    avg_social_dist = social,
-                    avg_spatial_dist = spatial)
-
-                sim_stats = sim_stats.append(stats, ignore_index=True)
-
-        file_string = 'data/' + 'sim_stats_' + str(self.population_size) + 'agents.csv'
-
-        sim_stats.to_csv(file_string)
-
-        #return self.friends_score
-=======
         file_name = 'data/' + 'sim_stats_' + str(self.population_size) + 'agents.csv'
         create_sim_stats(self.schedule, self.M, file_name)
->>>>>>> 233979c84762d156c29a49ae0cc95171350ca428

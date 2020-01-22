@@ -16,6 +16,10 @@ def main(iterations, loop):
         for i in range(iterations):
             iteration_df = friends.run_model(iterating=True)
             all_dfs.append(iteration_df)
+        all_dfs = pd.concat(all_dfs)
+        by_row_index = all_dfs.groupby(all_dfs.index)
+        df_means = by_row_index.mean()
+        df_means.to_csv('data/sim_stats_avg_' + str(iterations) + '_runs.csv')
      
     else:
         friends.run_model()
@@ -26,13 +30,8 @@ def main(iterations, loop):
         print("Number of pairs of friends: ", df['Friends'].iloc[-1])
         print("Number of interactions: ", df['Interactions'].iloc[-1])
         create_model_report(html_report=False)  # set html_report to True to produce pandas_profiling report
-        
-    all_dfs = pd.concat(all_dfs)
-    by_row_index = all_dfs.groupby(all_dfs.index)
-    df_means = by_row_index.mean()
-    df_means.to_csv('data/sim_stats_avg_' + str(iterations) + '_runs.csv')
 
 
 
 if __name__ == '__main__':
-    main(iterations=100, loop=False) # set loop to true to run model multiple times
+    main(iterations=2, loop=True) # set loop to true to run model multiple times

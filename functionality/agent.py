@@ -13,7 +13,6 @@ class Human(Agent):
         self.home = pos
         self.max_travel_time = np.random.randint(5, 10)
         self.speed = speed
-        self.max_travel = np.random.randint(9, 14)
         self.character = character
         self.interaction = False
         self.path = []
@@ -32,12 +31,6 @@ class Human(Agent):
 
         if not self.interaction and len(self.path):
             self.move()
-
-    def get_pos(self):
-        return self.pos
-
-    def get_character(self):
-        return self.character
 
     def get_friends(self):
         others = self.model.friends_score[self.unique_id]
@@ -60,18 +53,16 @@ class Human(Agent):
         social_sum = 0
         spatial_sum = 0
 
-        if count == 0:
+        if not count:
             avg_score = score_sum
             avg_social = social_sum
             avg_spatial = spatial_sum
         else:
-            # Sum
             for friend in friends:
                 #score_sum += self.model.friends_score[self.unique_id][friend.unique_id]
                 score_sum += self.model.friends_score.at[self.unique_id, friend.unique_id]
                 social_sum += abs(self.character - friend.character)
                 spatial_sum += self.get_distance(friend.pos)
-
             # Average
             avg_score = score_sum/count
             avg_social = social_sum/count
@@ -91,7 +82,8 @@ class Human(Agent):
                 # social distance & suitability
                 character_dist = abs(self.character - neighbor.character)
                 suitability = 1 - np.abs(character_dist)
-                if random.uniform(0, 0.6) < suitability:
+                social_introversion = 1 - self.model.social_extroversion
+                if random.uniform(0, social_introversion) < suitability:
                     self.model.friends[i][j] = 1
                     rand_suit = random.random() * suitability
                     self.model.friends_score[i][j] += 1 + rand_suit
@@ -116,9 +108,12 @@ class Human(Agent):
         min_travel_time = 1
         path = False
         while not path:
-            trip_time = np.random.randint(min_travel_time, self.max_travel_time)
-            trip_length = self.speed * trip_time
-            possible_trips = self.find_manhattan_neighbors(trip_length)
+            # all possible trips are considered
+            min_trip_length = self.speed * min_travel_time
+            max_trip_length = self.speed * self.max_travel_time
+            possible_trips = []
+            for i in range(min_trip_length, max_trip_length):
+                possible_trips += self.find_manhattan_neighbors(i)
 
             # Get possible destinations (cells)
             cells = []
@@ -136,25 +131,11 @@ class Human(Agent):
             selected_cell = random.choices(population=cells, weights=w, k=1)
             chosen_trip = selected_cell[0].pos
 
-
-            '''
-            cell_values = []
-            cell_pos = []
-            for cell in cells:
-                cell_values.append(cell.value)
-                cell_pos.append(cell.pos)
-            sum = sum(cell_values)
-
-            weights = []
-            for value in cell_values:
-                weights.append(value/sum)
-
-            chosen_trip = random.choice(possible_trips)
-            '''
             destination = [
                 chosen_trip[0] - self.pos[0],
                 chosen_trip[1] - self.pos[1]
             ]
+            trip_length = np.abs(destination[0]) + np.abs(destination[1])
             path = find_path([0, 0], destination, trip_length + 2, bounds)
         self.path = path
 

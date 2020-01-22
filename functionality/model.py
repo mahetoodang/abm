@@ -1,4 +1,3 @@
-import random
 import numpy as np
 import pandas as pd
 import networkx as nx
@@ -19,13 +18,13 @@ class Friends(Model):
     '''
     Model of making friends in a spatial setting
     '''
-
     def __init__(
             self,
             height=20, width=20,
             population_size=100,
             segregation=0.3,
-            social_proximity=0.2
+            social_proximity=0.2,
+            social_extroversion=0.6
     ):
 
         super().__init__()
@@ -33,11 +32,13 @@ class Friends(Model):
         self.height = height
         self.width = width
         self.population_size = population_size
+        self.social_extroversion = social_extroversion
+        self.speed_dist = [0.6, 0.3, 0.1]
 
-        # Add a schedule
+        # Add a schedule and a grid
         self.schedule = RandomActivation(self)
-
         self.grid = MultiGrid(self.width, self.height, torus=False)
+
         self.data_collector = DataCollector({
             "Friends": lambda m: np.count_nonzero(self.friends.values),
             "Interactions": lambda m: np.sum(self.interactions.values)
@@ -52,12 +53,11 @@ class Friends(Model):
         self.interactions = self.init_matrix()
         self.friends_score = self.init_matrix()
 
-        # This is required for the datacollector to work
+        # This is required for the data_collector to work
         self.running = True
         self.data_collector.collect(self)
 
     def init_population(self, segregation, social_proximity):
-        speed_dist = [0.6, 0.3, 0.1]
         schelling = SchellingModel(
             self.height, self.width,
             segregation,
@@ -69,7 +69,7 @@ class Friends(Model):
             if not schelling.running:
                 break
         for ag in schelling.schedule.agents:
-            speed = choose_speed(speed_dist)
+            speed = choose_speed(self.speed_dist)
             [x, y] = ag.pos
             character = ag.character
             self.new_agent((x, y), speed, character)
@@ -80,7 +80,6 @@ class Friends(Model):
             agent_id = self.next_id()
             cell = Cell(agent_id, self, (x, y))
             self.grid.place_agent(cell, (x, y))
-
 
     def init_matrix(self):
         agents = self.schedule.agents
@@ -109,10 +108,6 @@ class Friends(Model):
     def run_model(self, iterating=False, step_count=500):
         for i in range(step_count):
             self.step()
-
-            # once every 5 steps
-            if i % 10 == 0:
-                 self.friends_score = self.friends_score * 0.99
 
         file_name = 'data/' + 'sim_stats_' + str(self.population_size) + 'agents.csv'
 

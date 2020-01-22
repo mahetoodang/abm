@@ -17,6 +17,10 @@ model_params = {
     "social_proximity": UserSettableParameter(
         'slider', 'Social proximity level',
         value=0, min_value=0, max_value=1, step=0.05
+    ),
+    "social_extroversion": UserSettableParameter(
+        'slider', 'Extroversion of society',
+        value=0.4, min_value=0, max_value=1, step=0.05
     )
 }
 

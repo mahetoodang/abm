@@ -83,15 +83,9 @@ class Human(Agent):
                 character_dist = abs(self.character - neighbor.character)
                 suitability = 1 - np.abs(character_dist)
                 social_introversion = 1 - self.model.social_extroversion
-<<<<<<< HEAD
-                if random.uniform(0, social_introversion) < suitability:
+                if random.uniform(social_introversion, 1) < suitability:
                     self.model.last_interaction[i][j] = 0
                     self.model.last_interaction[j][i] = 0
-
-=======
-                if random.uniform(social_introversion, 1) < suitability:
-                    self.model.friends[i][j] = 1
->>>>>>> 6e48ee0aee15432695c7916d3b398041cac17b8c
                     rand_suit = random.random() * suitability
                     self.model.friends_score[i][j] +=  rand_suit
                     self.model.friends_score[j][i] +=  rand_suit

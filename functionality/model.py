@@ -115,12 +115,8 @@ class Friends(Model):
                  self.friends_score = self.friends_score * 0.99
 
         file_name = 'data/' + 'sim_stats_' + str(self.population_size) + 'agents.csv'
-<<<<<<< HEAD
-        create_sim_stats(self.schedule, self.M, file_name)
-=======
 
         if iterating:
             return create_sim_stats(self.schedule, self.M, True)
         else:
             create_sim_stats(self.schedule, self.M, False, file_name)
->>>>>>> 53df9841583c532d5d8cd9a7fe34919d4ace728b

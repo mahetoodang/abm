@@ -86,8 +86,8 @@ class Human(Agent):
                 if random.uniform(0, social_introversion) < suitability:
                     self.model.friends[i][j] = 1
                     rand_suit = random.random() * suitability
-                    self.model.friends_score[i][j] += 1 + rand_suit
-                    self.model.friends_score[j][i] += 1 + rand_suit
+                    self.model.friends_score[i][j] +=  rand_suit
+                    self.model.friends_score[j][i] +=  rand_suit
 
                     # Update cell values
                     cell = self.get_cell()

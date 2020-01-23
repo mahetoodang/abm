@@ -84,7 +84,7 @@ class Friends(Model):
 
     def init_matrix(self):
         agents = self.schedule.agents
-        ids = [ag.unique_id for ag in agents]
+        ids = [ag.unique_id for ag in agents if type(ag) is Human]
         n = len(ids)
         mat = pd.DataFrame(np.zeros((n, n)), index=ids, columns=ids)
         return mat
@@ -104,7 +104,7 @@ class Friends(Model):
         self.schedule.step()
 
         agents = self.schedule.agents
-        ids = [ag.unique_id for ag in agents]
+        ids = [ag.unique_id for ag in agents if type(ag) is Human]
         #row = len(self.last_interaction)
         #col = len(self.last_interaction[0])
 

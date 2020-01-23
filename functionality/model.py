@@ -49,6 +49,7 @@ class Friends(Model):
         self.init_population(segregation, social_proximity)
         self.init_cells()
 
+        self.friends = self.init_matrix() # not used
         self.friends_score = self.init_matrix()
         self.interactions = self.init_matrix()
         self.last_interaction = self.init_matrix()
@@ -101,11 +102,14 @@ class Friends(Model):
 
     def step(self):
         self.schedule.step()
-        row = len(self.last_interaction)
-        col = len(self.last_interaction[0])
 
-        for i in range(row):
-            for j in range(col):
+        agents = self.schedule.agents
+        ids = [ag.unique_id for ag in agents]
+        #row = len(self.last_interaction)
+        #col = len(self.last_interaction[0])
+
+        for i in ids:
+            for j in ids:
                 if self.last_interaction[i][j] > 0:
                     self.friends_score[i][j] = self.friends_score[i][j] * 0.99
 

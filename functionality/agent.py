@@ -85,7 +85,6 @@ class Human(Agent):
                 social_introversion = 1 - self.model.social_extroversion
 
                 if random.uniform(social_introversion, 1) < suitability:
-                    print('test')
                     self.model.friends[i][j] = 1
                     self.model.last_interaction[i][j] = 0
                     self.model.last_interaction[j][i] = 0

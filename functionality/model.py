@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import networkx as nx
+from time import time
 
 from mesa import Model
 from mesa.space import MultiGrid
@@ -108,10 +109,18 @@ class Friends(Model):
         #row = len(self.last_interaction)
         #col = len(self.last_interaction[0])
 
-        for i in ids:
-            for j in ids:
-                if self.last_interaction[i][j] > 0:
-                    self.friends_score[i][j] = self.friends_score[i][j] * 0.99
+        # keeping this here, just in case
+        #for i in ids:
+        #    for j in ids:
+        #        if self.last_interaction[i][j] > 0:
+        #            self.friends_score[i][j] = self.friends_score[i][j] * 0.99
+
+        for column in ids:
+            values = self.friends_score[column].values
+            mask_values = self.last_interaction[column].values
+            mask = mask_values > 0
+            values[mask] *= 0.99
+            self.friends_score[column] = values
 
         self.last_interaction += 1
 

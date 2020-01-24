@@ -55,6 +55,7 @@ class Friends(Model):
         self.friends_score = self.init_matrix()
         self.interactions = self.init_matrix()
         self.last_interaction = self.init_matrix()
+        self.social_distance = self.init_social_distance()
 
         # This is required for the data_collector to work
         self.running = True
@@ -90,6 +91,18 @@ class Friends(Model):
         n = len(ids)
         mat = pd.DataFrame(np.zeros((n, n)), index=ids, columns=ids)
         return mat
+
+    def init_social_distance(self):
+        agents = self.schedule.agents
+        social_distance = self.init_matrix()
+        for ag1 in agents:
+            for ag2 in agents:
+                i = ag1.unique_id
+                j = ag2.unique_id
+                if i != j:
+                    dist = np.abs(ag1.character - ag2.character)
+                    social_distance[i][j] = dist
+        return social_distance
 
     def new_agent(self, pos, speed, character):
         agent_id = self.next_id()
@@ -128,8 +141,12 @@ class Friends(Model):
         return np.mean(means)
 
     def avg_friends_distance(self):
-        scores = [ag.get_avg()[1] for ag in self.schedule.agents]
-        return np.mean(scores)
+        check = self.friends_score.copy().values
+        mat = self.social_distance.copy().values
+        mat[check == 0] = np.nan
+        means = np.nanmean(mat, axis=0)
+        means[np.isnan(means)] = 0
+        return np.mean(means)
 
     def run_model(self, iterating=False, step_count=500):
         for i in range(step_count):

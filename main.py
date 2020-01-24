@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import time
 
 from functionality.model import Friends
 from visualization.graph_visualization import \
@@ -28,10 +29,11 @@ def main(iterations, loop):
 
      
     else:
+        i = 0
         friends.run_model()
         df = friends.data_collector.get_model_vars_dataframe()
-        visualize_network(friends.M, friends.friends_score)
-        distance_histograms(friends.M, friends)
+        visualize_network(friends.M, friends.friends_score, i, iterations)
+        distance_histograms(friends.M, friends, i, iterations, scores)
         friends_speed_histogram(friends.M)
         print("Number of pairs of friends: ", df['Friends'].iloc[-1])
         print("Number of interactions: ", df['Interactions'].iloc[-1])
@@ -39,4 +41,8 @@ def main(iterations, loop):
 
 
 if __name__ == '__main__':
-    main(iterations=3, loop=True)  # set loop to true to run model multiple times
+    begin = time.time()
+    print(begin)
+    main(iterations=2, loop=True)  # set loop to true to run model multiple times
+    end = time.time()
+    print("this run took:", end-begin)

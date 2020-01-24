@@ -21,7 +21,7 @@ class Friends(Model):
     def __init__(
             self,
             height=20, width=20,
-            population_size=50,
+            population_size=100,
             segregation=0.3,
             social_proximity=0.2,
             social_extroversion=0.6,

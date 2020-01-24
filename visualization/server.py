@@ -21,6 +21,10 @@ model_params = {
     "social_extroversion": UserSettableParameter(
         'slider', 'Extroversion of society',
         value=0.4, min_value=0, max_value=1, step=0.05
+    ),
+    "decay": UserSettableParameter(
+        'slider', 'Friendship decay speed',
+        value=0.99, min_value=0.01, max_value=0.99, step=0.01
     )
 }
 
@@ -60,12 +64,12 @@ def draw_agent(agent):
 
 
 friend_chart = ChartModule(
-    [{"Label": "Friends", "Color": "Black"}],
+    [{"Label": "Friends score", "Color": "Black"}],
     data_collector_name='data_collector'
 )
 
 interaction_chart = ChartModule(
-    [{"Label": "Interactions", "Color": "Blue"}],
+    [{"Label": "Friends distance", "Color": "Blue"}],
     data_collector_name='data_collector'
 )
 

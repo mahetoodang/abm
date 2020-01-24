@@ -25,7 +25,8 @@ class Friends(Model):
             population_size=100,
             segregation=0.3,
             social_proximity=0.2,
-            social_extroversion=0.6
+            social_extroversion=0.6,
+            decay=0.99
     ):
 
         super().__init__()
@@ -34,6 +35,7 @@ class Friends(Model):
         self.width = width
         self.population_size = population_size
         self.social_extroversion = social_extroversion
+        self.decay = decay
         self.speed_dist = [0.6, 0.3, 0.1]
 
         # Add a schedule and a grid
@@ -41,8 +43,8 @@ class Friends(Model):
         self.grid = MultiGrid(self.width, self.height, torus=False)
 
         self.data_collector = DataCollector({
-            "Friends": lambda m: np.count_nonzero(self.friends.values),
-            "Interactions": lambda m: np.sum(self.interactions.values)
+            "Friends score": lambda m: self.avg_friends_score(),
+            "Friends distance": lambda m: self.avg_friends_distance()
         })
 
         # Create the population
@@ -106,26 +108,26 @@ class Friends(Model):
 
         agents = self.schedule.agents
         ids = [ag.unique_id for ag in agents if type(ag) is Human]
-        #row = len(self.last_interaction)
-        #col = len(self.last_interaction[0])
-
-        # keeping this here, just in case
-        #for i in ids:
-        #    for j in ids:
-        #        if self.last_interaction[i][j] > 0:
-        #            self.friends_score[i][j] = self.friends_score[i][j] * 0.99
 
         for column in ids:
             values = self.friends_score[column].values
             mask_values = self.last_interaction[column].values
             mask = mask_values > 0
-            values[mask] *= 0.99
+            values[mask] *= self.decay
             self.friends_score[column] = values
 
         self.last_interaction += 1
 
         # Save the statistics
         self.data_collector.collect(self)
+
+    def avg_friends_score(self):
+        scores = [ag.get_avg()[0] for ag in self.schedule.agents]
+        return np.mean(scores)
+
+    def avg_friends_distance(self):
+        scores = [ag.get_avg()[1] for ag in self.schedule.agents]
+        return np.mean(scores)
 
     def run_model(self, iterating=False, step_count=500):
         for i in range(step_count):

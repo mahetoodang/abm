@@ -22,9 +22,7 @@ class Friends(Model):
             self,
             height=20, width=20,
             population_size=100,
-            tolerance=0.3
-            mobility=True,
-            hubs=True,
+            tolerance=0.3,
             social_proximity=0.2,
             social_extroversion=0.6,
             decay=0.99,

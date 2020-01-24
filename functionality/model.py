@@ -79,10 +79,17 @@ class Friends(Model):
 
     def init_cells(self):
         # Initialize cell values
-        for _, x, y in self.grid.coord_iter():
-            agent_id = self.next_id()
-            cell = Cell(agent_id, self, (x, y))
-            self.grid.place_agent(cell, (x, y))
+        if self.hubs == True:
+            for _, x, y in self.grid.coord_iter():
+                agent_id = self.next_id()
+                cell = Cell(agent_id, self, (x, y), 0.5)
+                self.grid.place_agent(cell, (x, y))
+        else:
+            for _, x, y in self.grid.coord_iter():
+                agent_id = self.next_id()
+                cell = Cell(agent_id, self, (x, y), 0)
+                self.grid.place_agent(cell, (x, y))
+
 
     def init_matrix(self):
         agents = self.schedule.agents

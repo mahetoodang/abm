@@ -37,7 +37,7 @@ def main(iter, seg, mob, hub):
         for i in range(iter):
             iteration_df = friends.run_model(iterating=True)
             all_dfs.append(iteration_df)
-            visualize_network(friends.M, friends.friends_score, i , iter)
+            visualize_network(friends.M, friends.friends_score, i, iter)
             scores = distance_histograms(friends.M, friends, i, iter, scores)
         all_dfs = pd.concat(all_dfs)
         by_row_index = all_dfs.groupby(all_dfs.index)
@@ -63,4 +63,4 @@ def main(iter, seg, mob, hub):
 
 if __name__ == '__main__':
     '''Run model: iterations, segregation, varying mobility, social hubs'''
-    main(iter=2, seg=False, mob=False, hub=False)
+    main(iter=1, seg=False, mob=False, hub=False)

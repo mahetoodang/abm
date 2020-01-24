@@ -71,6 +71,7 @@ class Human(Agent):
         return avg_score, avg_social, avg_spatial, count
 
     def interact_with_neighbors(self):
+        # needs performance profiling
         neighbors = self.model.grid.get_neighbors(self.pos, True, include_center=True, radius=0)
         for neighbor in neighbors:
             if self.unique_id != neighbor.unique_id and type(neighbor) is Human:
@@ -113,27 +114,21 @@ class Human(Agent):
         min_travel_time = 1
         path = False
         while not path:
-            # all possible trips are considered
             min_trip_length = self.speed * min_travel_time
             max_trip_length = self.speed * self.max_travel_time
-            possible_trips = []
-            for i in range(min_trip_length, max_trip_length):
-                possible_trips += self.find_manhattan_neighbors(i)
-
-            # Get possible destinations (cells)
             cells = []
-            for pos in possible_trips:
-                this_cell = self.model.grid.get_cell_list_contents([pos])
-                for agent in this_cell:
-                    if type(agent) is Cell:
-                        cells.append(agent)
+            for i in range(min_trip_length, max_trip_length):
+                positions = self.find_manhattan_neighbors(i)
+                for pos in positions:
+                    this_cell = self.model.grid.get_cell_list_contents([pos])
+                    for agent in this_cell:
+                        if type(agent) is Cell:
+                            cells.append(agent)
 
             # Weighted random choice based on cell value if running with social hubs
-            if self.model.hubs == True:
+            if self.model.hubs:
                 value_sum = sum((1- abs(self.character - cell.value)) for cell in cells)
-                w =[]
-                for cell in cells:
-                    w.append((1-abs(self.character-cell.value))/value_sum)
+                w = [(1-abs(self.character-cell.value))/value_sum for cell in cells]
                 selected_cell = random.choices(population=cells, weights=w, k=1)
                 chosen_trip = selected_cell[0].pos
             else:
@@ -199,30 +194,37 @@ class Human(Agent):
         ]
         return bounds
 
+    def is_inside(self, p, max_x, max_y):
+        x_in = 0 <= p[0] <= max_x
+        y_in = 0 <= p[1] <= max_y
+        return x_in and y_in
+
     def find_manhattan_neighbors(self, radius):
-        # constructs all possible destinations given manhattan radius
-        neighborhood = []
+        neighbors = []
+        pos = self.pos
+        [max_x, max_y] = [self.model.grid.width - 1, self.model.grid.height - 1]
         for i in range(radius+1):
             if i != 0:
-                neighborhood.append([i, radius - i])
-                neighborhood.append([-i, radius - i])
+                p = [i + pos[0], radius - i + pos[1]]
+                if self.is_inside(p, max_x, max_y):
+                    neighbors.append(p)
+                p = [-i + pos[0], radius - i + pos[1]]
+                if self.is_inside(p, max_x, max_y):
+                    neighbors.append(p)
                 if (radius - i) != 0:
-                    neighborhood.append([i, -(radius - i)])
-                    neighborhood.append([-i, -(radius - i)])
+                    p = [i + pos[0], -(radius - i) + pos[1]]
+                    if self.is_inside(p, max_x, max_y):
+                        neighbors.append(p)
+                    p = [-i + pos[0], -(radius - i) + pos[1]]
+                    if self.is_inside(p, max_x, max_y):
+                        neighbors.append(p)
             else:
-                neighborhood.append([i, radius - i])
-                neighborhood.append([i, -(radius - i)])
-        # translates relative coordinates to world coordinates and
-        # filters out the ones that are out of bounds
-        pos = self.pos
-        [max_x, max_y] = [self.model.grid.width-1, self.model.grid.height-1]
-        neighbors = []
-        for n in neighborhood:
-            p = [n[0] + pos[0], n[1] + pos[1]]
-            x_in = 0 <= p[0] <= max_x
-            y_in = 0 <= p[1] <= max_y
-            if x_in and y_in:
-                neighbors.append(p)
+                p = [i + pos[0], radius - i + pos[1]]
+                if self.is_inside(p, max_x, max_y):
+                    neighbors.append(p)
+                p = [i + pos[0], -(radius - i) + pos[1]]
+                if self.is_inside(p, max_x, max_y):
+                    neighbors.append(p)
         return neighbors
 
     def random_move(self):

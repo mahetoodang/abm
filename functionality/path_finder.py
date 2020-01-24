@@ -1,5 +1,4 @@
 import numpy as np
-from copy import deepcopy
 from random import choice
 
 
@@ -11,9 +10,9 @@ def find_path(start_pos, end_pos, length, bounds=False):
         return False
     steps = []
     for i in range(np.abs(x)):
-        steps.append([np.sign(x) * 1, 0])
+        steps.append([int(np.sign(x) * 1), 0])
     for i in range(np.abs(y)):
-        steps.append([0, np.sign(y) * 1])
+        steps.append([0, int(np.sign(y)) * 1])
     missing_steps = length - manhattan
     while missing_steps > 0:
         [all_same, init_step] = moves_of_same_type(steps)
@@ -36,14 +35,16 @@ def find_path(start_pos, end_pos, length, bounds=False):
 
 
 def non_overlapping_path(steps, path, bounds):
-    remaining = deepcopy(steps)
+    # remaining = deepcopy(steps)
+    remaining = list(map(list, steps))
     if not len(remaining):
         return path
     move_options = possible_options(remaining)
     while len(move_options):
         move = choice(move_options)
         move_options.remove(move)
-        new_path = deepcopy(path)
+        # new_path = deepcopy(path)
+        new_path = list(map(list, path))
         new_path.append(move)
         not_overlapping = not does_overlap(new_path)
         if bounds:
@@ -51,7 +52,8 @@ def non_overlapping_path(steps, path, bounds):
         else:
             in_bounds = True
         if not_overlapping and in_bounds:
-            try_remaining = deepcopy(remaining)
+            # try_remaining = deepcopy(remaining)
+            try_remaining = list(map(list, remaining))
             try_remaining.remove(move)
             found_path = non_overlapping_path(try_remaining, new_path, bounds)
             if found_path:

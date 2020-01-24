@@ -23,7 +23,6 @@ class Friends(Model):
             height=20, width=20,
             population_size=100,
             tolerance=0.3,
-            social_proximity=0.2,
             social_extroversion=0.6,
             decay=0.99,
             mobility = True,
@@ -191,9 +190,9 @@ class Friends(Model):
         for i in range(step_count):
             self.step()
 
-        file_name = 'data/' + 'sim_stats_' + str(self.population_size) + 'agents.csv'
+        #file_name = 'data/' + 'sim_stats_' + str(self.population_size) + 'agents.csv'
 
-        if iterating:
-            return create_sim_stats(self.schedule, self.M, True)
-        else:
-            create_sim_stats(self.schedule, self.M, False, file_name)
+        #if iterating:
+        #    return create_sim_stats(self.schedule, self.M, True)
+        #else:
+        #    create_sim_stats(self.schedule, self.M, False, file_name)

@@ -27,8 +27,9 @@ def main(iter, seg, mob, hub):
     # Tolerance level to 0
     if seg == False:
         s = 0
-
-    friends = Friends(tolerance=s, mobility=mob, hubs=hub)
+        friends = Friends(tolerance=s, mobility=mob, hubs=hub)
+    else:
+        friends = Friends(mobility=mob, hubs=hub)
 
     all_dfs = []
     scores = np.zeros(friends.height + friends.width)
@@ -44,7 +45,7 @@ def main(iter, seg, mob, hub):
         df_means = by_row_index.mean()
         df_means.to_csv('data/sim_stats_avg_' + str(iter) + '_runs.csv')
 
-     
+
     else:
         i = 0
         begin = time.time()

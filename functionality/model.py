@@ -24,7 +24,9 @@ class Friends(Model):
             population_size=100,
             tolerance=0.3,
             social_extroversion=0.6,
-            decay=0.99
+            decay=0.99,
+            mobility = True,
+            hubs = True
     ):
 
         super().__init__()
@@ -34,7 +36,13 @@ class Friends(Model):
         self.population_size = population_size
         self.social_extroversion = social_extroversion
         self.decay = decay
-        self.speed_dist = [0.6, 0.3, 0.1]
+        self.mobility = mobility
+        self.hubs = hubs
+
+        if mobility:
+            self.speed_dist = [0.6, 0.3, 0.1]
+        else:
+            self.speed_dist = [1, 0, 0]
 
         # Add a schedule and a grid
         self.schedule = RandomActivation(self)
@@ -79,7 +87,7 @@ class Friends(Model):
 
     def init_cells(self):
         # Initialize cell values
-        if self.hubs == True:
+        if self.hubs:
             for _, x, y in self.grid.coord_iter():
                 agent_id = self.next_id()
                 cell = Cell(agent_id, self, (x, y), 0.5)

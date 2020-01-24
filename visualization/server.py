@@ -21,6 +21,10 @@ model_params = {
     "social_extroversion": UserSettableParameter(
         'slider', 'Extroversion of society',
         value=0.4, min_value=0, max_value=1, step=0.05
+    ),
+    "decay": UserSettableParameter(
+        'slider', 'Friendship decay speed',
+        value=0.99, min_value=0.01, max_value=0.99, step=0.01
     )
 }
 
@@ -60,18 +64,23 @@ def draw_agent(agent):
 
 
 friend_chart = ChartModule(
-    [{"Label": "Friends", "Color": "Black"}],
+    [{"Label": "Friends score", "Color": "Black"}],
     data_collector_name='data_collector'
 )
 
-interaction_chart = ChartModule(
-    [{"Label": "Interactions", "Color": "Blue"}],
+social_chart = ChartModule(
+    [{"Label": "Friends distance", "Color": "Blue"}],
+    data_collector_name='data_collector'
+)
+
+spatial_chart = ChartModule(
+    [{"Label": "Friends spatial distance", "Color": "Red"}],
     data_collector_name='data_collector'
 )
 
 canvas_element = CanvasGrid(draw_agent, 20, 20, 500, 500)
 
-element_list = [canvas_element, friend_chart, interaction_chart]
+element_list = [canvas_element, friend_chart, social_chart, spatial_chart]
 
 server = ModularServer(Friends, element_list, "Making friends", model_params)
 

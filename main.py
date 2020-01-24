@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 from functionality.model import Friends
 from visualization.graph_visualization import \
@@ -12,15 +13,19 @@ def main(iterations, loop):
     
     all_dfs = []
     friends = Friends()
+    scores = np.zeros(friends.height + friends.width)
     
     if loop:
         for i in range(iterations):
             iteration_df = friends.run_model(iterating=True)
             all_dfs.append(iteration_df)
+            visualize_network(friends.M, friends.friends_score, i , iterations)
+            scores = distance_histograms(friends.M, friends, i, iterations, scores)
         all_dfs = pd.concat(all_dfs)
         by_row_index = all_dfs.groupby(all_dfs.index)
         df_means = by_row_index.mean()
         df_means.to_csv('data/sim_stats_avg_' + str(iterations) + '_runs.csv')
+
      
     else:
         friends.run_model()
@@ -34,8 +39,4 @@ def main(iterations, loop):
 
 
 if __name__ == '__main__':
-<<<<<<< HEAD
-    main(iterations=2, loop=False) # set loop to true to run model multiple times
-=======
-    main(iterations=2, loop=True)  # set loop to true to run model multiple times
->>>>>>> b88122d267322ea3ea564f72358406ff68a02537
+    main(iterations=3, loop=True)  # set loop to true to run model multiple times

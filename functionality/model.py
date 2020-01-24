@@ -118,7 +118,7 @@ class Friends(Model):
         # Save the statistics
         self.data_collector.collect(self)
 
-    def run_model(self, iterating=False, step_count=500):
+    def run_model(self, iterating=False, step_count=50):
         for i in range(step_count):
             self.step()
 

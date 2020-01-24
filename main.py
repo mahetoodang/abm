@@ -22,7 +22,7 @@ def main(iter, seg, mob, hub):
         "segregation,\n" + param_str[1] + "varying mobility and\n" +
         param_str[2] + "social hubs.\n")
 
-    # Segregation level to 0
+    # Set segregation level to 0
     if seg == False:
         s = 0
 
@@ -40,17 +40,18 @@ def main(iter, seg, mob, hub):
         df_means.to_csv('data/sim_stats_avg_' + str(iterations) + '_runs.csv')
 
     else:
-        friends.run_model()
+        friends.run_model(iterating=False)
         df = friends.data_collector.get_model_vars_dataframe()
         visualize_network(friends.M, friends.friends_score)
         distance_histograms(friends.M, friends)
         friends_speed_histogram(friends.M)
-        print("Number of pairs of friends: ", df['Friends'].iloc[-1])
-        print("Number of interactions: ", df['Interactions'].iloc[-1])
+        print(df)
+        #print("Number of pairs of friends: ", df['Friends'].iloc[-1])
+        #print("Number of interactions: ", df['Interactions'].iloc[-1])
         create_model_report(html_report=False)  # set html_report to True to produce pandas_profiling report
 
 
 if __name__ == '__main__':
-    '''Run model'''
-    
+    '''Run model: iterations, segregation, varying mobility, social hubs'''
+
     main(iter=1, seg=False, mob=False, hub=False)

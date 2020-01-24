@@ -23,6 +23,8 @@ class Friends(Model):
             height=20, width=20,
             population_size=100,
             segregation=0.3,
+            mobility=True,
+            hubs=True,
             social_proximity=0.2,
             social_extroversion=0.6,
             decay=0.99
@@ -33,9 +35,16 @@ class Friends(Model):
         self.height = height
         self.width = width
         self.population_size = population_size
+        self.mobility = mobility
+        self.hubs = hubs
         self.social_extroversion = social_extroversion
         self.decay = decay
-        self.speed_dist = [0.6, 0.3, 0.1]
+
+        # Varying mobility
+        if self.mobility == True:
+            self.speed_dist = [0.6, 0.3, 0.1]
+        else:
+            self.speed_dist = [1.00]
 
         # Add a schedule and a grid
         self.schedule = RandomActivation(self)

@@ -1,4 +1,5 @@
 import pandas as pd
+from time import time
 
 from functionality.model import Friends
 from visualization.graph_visualization import \
@@ -40,7 +41,12 @@ def main(iter, seg, mob, hub):
         df_means.to_csv('data/sim_stats_avg_' + str(iterations) + '_runs.csv')
 
     else:
+        t1 = time()
         friends.run_model()
+        t2 = time()
+        print()
+        print("Model run time: ", t2 - t1)
+        print()
         df = friends.data_collector.get_model_vars_dataframe()
         visualize_network(friends.M, friends.friends_score)
         distance_histograms(friends.M, friends)

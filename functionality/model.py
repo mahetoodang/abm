@@ -22,12 +22,14 @@ class Friends(Model):
             self,
             height=20, width=20,
             population_size=100,
-            segregation=0.3,
+            tolerance=0.3
             mobility=True,
             hubs=True,
             social_proximity=0.2,
             social_extroversion=0.6,
-            decay=0.99
+            decay=0.99,
+            mobility = True,
+            hubs = True
     ):
 
         super().__init__()
@@ -40,11 +42,10 @@ class Friends(Model):
         self.social_extroversion = social_extroversion
         self.decay = decay
 
-        # Varying mobility
-        if self.mobility == True:
+        if mobility:
             self.speed_dist = [0.6, 0.3, 0.1]
         else:
-            self.speed_dist = [1.00]
+            self.speed_dist = [1, 0, 0]
 
         # Add a schedule and a grid
         self.schedule = RandomActivation(self)
@@ -58,7 +59,7 @@ class Friends(Model):
 
         # Create the population
         self.M = nx.Graph()
-        self.init_population(segregation, social_proximity)
+        self.init_population(tolerance)
         self.init_cells()
 
         self.friends = self.init_matrix() # not used
@@ -71,11 +72,10 @@ class Friends(Model):
         self.running = True
         self.data_collector.collect(self)
 
-    def init_population(self, segregation, social_proximity):
+    def init_population(self, tolerance):
         schelling = SchellingModel(
             self.height, self.width,
-            segregation,
-            social_proximity,
+            tolerance,
             self.population_size
         )
         for i in range(200):
@@ -90,7 +90,7 @@ class Friends(Model):
 
     def init_cells(self):
         # Initialize cell values
-        if self.hubs == True:
+        if self.hubs:
             for _, x, y in self.grid.coord_iter():
                 agent_id = self.next_id()
                 cell = Cell(agent_id, self, (x, y), 0.5)
@@ -156,25 +156,37 @@ class Friends(Model):
     def avg_friends_score(self):
         mat = self.friends_score.copy().values
         mat[mat == 0] = np.nan
-        means = np.nanmean(mat, axis=0)
-        means[np.isnan(means)] = 0
-        return np.mean(means)
+        try:
+            means = np.nanmean(mat, axis=0)
+            means[np.isnan(means)] = 0
+            mean = np.mean(means)
+        except:
+            mean = 0
+        return mean
 
     def avg_friends_social_distance(self):
         check = self.friends_score.copy().values
         mat = self.social_distance.copy().values
         mat[check == 0] = np.nan
-        means = np.nanmean(mat, axis=0)
-        means[np.isnan(means)] = 0
-        return np.mean(means)
+        try:
+            means = np.nanmean(mat, axis=0)
+            means[np.isnan(means)] = 0
+            mean = np.mean(means)
+        except:
+            mean = 0
+        return mean
 
     def avg_friends_spatial_distance(self):
         check = self.friends_score.copy().values
         mat = self.spatial_distance.copy().values
         mat[check == 0] = np.nan
-        means = np.nanmean(mat, axis=0)
-        means[np.isnan(means)] = 0
-        return np.mean(means)
+        try:
+            means = np.nanmean(mat, axis=0)
+            means[np.isnan(means)] = 0
+            mean = np.mean(means)
+        except:
+            mean = 0
+        return mean
 
     def run_model(self, iterating=False, step_count=500):
         for i in range(step_count):

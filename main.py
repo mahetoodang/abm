@@ -19,14 +19,14 @@ def main(iter, seg, mob, hub):
         else:
             param_str.append("WITHOUT ")
     print('RUNNING Friends model for ' + str(iter) + ' ITERATION(S)\n' + param_str[0] +
-        "segregation,\n" + param_str[1] + "varying mobility and\n" +
+        "tolerance,\n" + param_str[1] + "varying mobility and\n" +
         param_str[2] + "social hubs.\n")
 
-    # Set segregation level to 0
+    # Tolerance level to 0
     if seg == False:
         s = 0
 
-    friends = Friends(segregation=s, mobility=mob, hubs=hub)
+    friends = Friends(tolerance=s, mobility=mob, hubs=hub)
 
     all_dfs = []
     # Loop if iterations more than one

@@ -93,9 +93,10 @@ class Human(Agent):
                     self.model.friends_score[i][j] +=  rand_suit
                     self.model.friends_score[j][i] +=  rand_suit
 
-                    # Update cell values
-                    cell = self.get_cell()
-                    cell.update(self.character, neighbor.character)
+                    # Update cell values if running with social hubs
+                    if self.model.hubs == True:
+                        cell = self.get_cell()
+                        cell.update(self.character, neighbor.character)
 
                 self.model.interactions[i][j] += 1
                 break
@@ -127,13 +128,17 @@ class Human(Agent):
                     if type(agent) is Cell:
                         cells.append(agent)
 
-            # Weighted random choice based on cell value
-            value_sum = sum((1- abs(self.character - cell.value)) for cell in cells)
-            w =[]
-            for cell in cells:
-                w.append((1-abs(self.character-cell.value))/value_sum)
-            selected_cell = random.choices(population=cells, weights=w, k=1)
-            chosen_trip = selected_cell[0].pos
+            # Weighted random choice based on cell value if running with social hubs
+            if self.model.hubs == True:
+                value_sum = sum((1- abs(self.character - cell.value)) for cell in cells)
+                w =[]
+                for cell in cells:
+                    w.append((1-abs(self.character-cell.value))/value_sum)
+                selected_cell = random.choices(population=cells, weights=w, k=1)
+                chosen_trip = selected_cell[0].pos
+            else:
+                selected_cell = random.choice(cells)
+                chosen_trip = selected_cell.pos
 
             destination = [
                 chosen_trip[0] - self.pos[0],

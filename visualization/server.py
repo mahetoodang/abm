@@ -13,11 +13,7 @@ from functionality.cell import Cell
 
 model_params = {
     "population_size": UserSettableParameter('slider', 'Population size', 1, 1, 500),
-    "segregation": UserSettableParameter('slider', 'Segregation level', value=0, min_value=0, max_value=1, step=0.05),
-    "social_proximity": UserSettableParameter(
-        'slider', 'Social proximity level',
-        value=0, min_value=0, max_value=1, step=0.05
-    ),
+    "tolerance": UserSettableParameter('slider', 'Tolerance level', value=0.2, min_value=0, max_value=1, step=0.05),
     "social_extroversion": UserSettableParameter(
         'slider', 'Extroversion of society',
         value=0.4, min_value=0, max_value=1, step=0.05

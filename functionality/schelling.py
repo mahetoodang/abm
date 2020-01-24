@@ -12,13 +12,12 @@ class SchellingAgent(Agent):
         self.character = np.random.random()
 
     def step(self):
-        similar = 0
+        distance = 0
         neighbors = self.model.grid.neighbor_iter(self.pos)
         for neighbor in neighbors:
-            if np.abs(neighbor.character - self.character) < self.model.social_proximity:
-                similar += 1
-        similar /= 8 # ratio of neighbours
-        if similar < self.model.tolerance:
+            distance += np.abs(neighbor.character - self.character)
+        avg_distance = distance / 8
+        if avg_distance > self.model.tolerance:
             self.model.grid.move_to_empty(self)
         else:
             self.model.happy += 1
@@ -26,11 +25,10 @@ class SchellingAgent(Agent):
 
 class SchellingModel(Model):
 
-    def __init__(self, height, width, tolerance, social_proximity, population):
+    def __init__(self, height, width, tolerance, population):
         self.height = height
         self.width = width
         self.tolerance = tolerance
-        self.social_proximity = social_proximity
         self.population = population
         self.happy = 0
 

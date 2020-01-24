@@ -94,7 +94,7 @@ def distance_histograms(M, friends, num, iterations, scores):
         else:
             far[index] += 1
             far2[index] += weight_friend
-
+     
     for i in range(len(far2)):
         if close2[i] != 0:
             close2[i] = close2[i]/close[i]
@@ -112,11 +112,10 @@ def distance_histograms(M, friends, num, iterations, scores):
 
 
     if (num+1) == iterations:
-        print("inside final loop")
         fig4 = plt.figure(figsize=(8,5))
         ax4 = fig4.add_subplot(111, axisbelow=True)
 
-        x = np.delete(scores, (0), axis=0)
+        scores = np.delete(scores, (0), axis=0)
         close = scores[::6]
         mid = scores[1::6]
         far = scores[2::6]
@@ -128,51 +127,64 @@ def distance_histograms(M, friends, num, iterations, scores):
         avg_far = np.mean(far, axis = 0)
         sd_far = np.std(far, axis=0)
         close = avg_close
-        print(close)
         mid = avg_mid
-        print(mid)
         far = avg_far
-        print(far)
 
         bins = np.arange(maxdist)
-        nc, bin_c, _ = ax4.hist(bins,maxdist, weights=close, stacked=True, label='similar')
-        mid = 0.5*(bin_c[1:] + bin_c[:-1])
-        plt.errorbar(mid, nc, yerr=sd_close, fmt='none')
+        nc, bin_c, _ = ax4.hist(bins,maxdist, weights=close, stacked=True, label='similar', color='blue')
+        midway = 0.5*(bin_c[1:] + bin_c[:-1])
+        plt.errorbar(midway, nc, yerr=sd_close, fmt='none')
 
-        #nm, bin_m, _ = ax4.hist(bins,maxdist, weights=mid, stacked=True,label ='not so similar' )
-        #mid = 0.5*(bin_m[1:] + bin_m[:-1])
-        #plt.errorbar(mid, nm, yerr=sd_mid, fmt='none')
+        nm, bin_m, _ = ax4.hist(bins,maxdist, weights=mid, stacked=True,label ='not so similar', color='green' )
+        midway = 0.5*(bin_m[1:] + bin_m[:-1])
+        plt.errorbar(midway, nm, yerr=sd_mid, fmt='none')
 
-        nf, bin_f, _ = ax4.hist(bins,maxdist, weights=far, stacked=True, label = "not similar at all")
-        mid = 0.5*(bin_f[1:] + bin_f[:-1])
-        plt.errorbar(mid, nf, yerr=sd_far, fmt='none')
+        nf, bin_f, _ = ax4.hist(bins,maxdist, weights=far, stacked=True, label = "not similar at all", color='purple')
+        midway = 0.5*(bin_f[1:] + bin_f[:-1])
+        plt.errorbar(midway, nf, yerr=sd_far, fmt='none')
 
         ax4.legend(title="Similarity of Friends")
         ax4.set_xlabel("Spatial of Distance of friends", fontsize=16)  
         ax4.set_ylabel("Number of friends", fontsize=16)
         fig4.savefig('data/img/Number Friends VS Distance.png')
-        print("done")
         plt.close()
 
         fig5 = plt.figure(figsize=(8,5))
         ax5 = fig5.add_subplot(111, axisbelow=True) 
 
-        close2 = scores[3::6]
-        mid2 = scores[4::6]
-        far3 = scores[5::6]
+        close = scores[3::6]
+        mid = scores[4::6]
+        far = scores[5::6]
+        avg_close = np.mean(close, axis = 0)
+        sd_close = np.std(close, axis=0)
+        avg_mid = np.mean(mid, axis = 0)
+        sd_mid = np.std(mid, axis=0)
+        avg_far = np.mean(far, axis = 0)
+        sd_far = np.std(far, axis=0)
+        close = avg_close
+        mid = avg_mid
+        far = avg_far
 
-        bins = np.arange(maxdist)
-        ax5.hist(bins,maxdist, weights=close2, stacked=True, label='similar')
-        ax5.hist(bins,maxdist, weights=mid2, stacked=True,label ='not so similar' )
-        ax5.hist(bins,maxdist, weights=far2, stacked=True, label = "not similar at all")
+        nc, bin_c, _ = ax5.hist(bins,maxdist, weights=close, stacked=True, label='similar', color='blue')
+        midway = 0.5*(bin_c[1:] + bin_c[:-1])
+        plt.errorbar(midway, nc, yerr=sd_close, fmt='none')
+
+        nm, bin_m, _ = ax5.hist(bins,maxdist, weights=mid, stacked=True,label ='not so similar', color='green')
+        midway = 0.5*(bin_m[1:] + bin_m[:-1])
+        plt.errorbar(midway, nm, yerr=sd_mid, fmt='none')
+
+        nf, bin_f, _ = ax5.hist(bins,maxdist, weights=far, stacked=True, label = "not similar at all", color='purple')
+        midway = 0.5*(bin_f[1:] + bin_f[:-1])
+        plt.errorbar(midway, nf, yerr=sd_far, fmt='none')
+
         ax5.legend(title="Similarity of Friends")
-        ax5.set_xlabel("Spatial of Distance of friends", fontsize=16)  
+        ax5.set_xlabel("Spatial distance of friends", fontsize=16)  
         ax5.set_ylabel("Avg. Friend Score", fontsize=16)
-        fig5.savefig('data/img/Friend Score VS Distance.png')
+        fig5.savefig('data/img/AVG. Friend Score VS Distance.png')
         plt.close()
         print()
-        
-    return scores
+
+    return scores    
 
 
 def friends_speed_histogram(M):

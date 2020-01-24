@@ -21,10 +21,11 @@ class Friends(Model):
     def __init__(
             self,
             height=20, width=20,
-            population_size=100,
+            population_size=50,
             segregation=0.3,
             social_proximity=0.2,
-            social_extroversion=0.6
+            social_extroversion=0.6,
+            decay=0.99
     ):
 
         super().__init__()
@@ -33,6 +34,7 @@ class Friends(Model):
         self.width = width
         self.population_size = population_size
         self.social_extroversion = social_extroversion
+        self.decay = decay
         self.speed_dist = [0.6, 0.3, 0.1]
 
         # Add a schedule and a grid
@@ -40,8 +42,9 @@ class Friends(Model):
         self.grid = MultiGrid(self.width, self.height, torus=False)
 
         self.data_collector = DataCollector({
-            "Friends": lambda m: np.count_nonzero(self.friends.values),
-            "Interactions": lambda m: np.sum(self.interactions.values)
+            "Friends score": lambda m: self.avg_friends_score(),
+            "Friends distance": lambda m: self.avg_friends_social_distance(),
+            "Friends spatial distance": lambda m: self.avg_friends_spatial_distance()
         })
 
         # Create the population
@@ -53,6 +56,7 @@ class Friends(Model):
         self.friends_score = self.init_matrix()
         self.interactions = self.init_matrix()
         self.last_interaction = self.init_matrix()
+        [self.social_distance, self.spatial_distance] = self.init_distances()
 
         # This is required for the data_collector to work
         self.running = True
@@ -84,10 +88,25 @@ class Friends(Model):
 
     def init_matrix(self):
         agents = self.schedule.agents
-        ids = [ag.unique_id for ag in agents]
+        ids = [ag.unique_id for ag in agents if type(ag) is Human]
         n = len(ids)
         mat = pd.DataFrame(np.zeros((n, n)), index=ids, columns=ids)
         return mat
+
+    def init_distances(self):
+        agents = self.schedule.agents
+        social_distance = self.init_matrix()
+        spatial_distance = self.init_matrix()
+        for ag1 in agents:
+            for ag2 in agents:
+                i = ag1.unique_id
+                j = ag2.unique_id
+                if i != j:
+                    soc_dist = np.abs(ag1.character - ag2.character)
+                    spat_dist = ag1.get_distance(ag2.pos)
+                    social_distance[i][j] = soc_dist
+                    spatial_distance[i][j] = spat_dist
+        return [social_distance, spatial_distance]
 
     def new_agent(self, pos, speed, character):
         agent_id = self.next_id()
@@ -104,21 +123,44 @@ class Friends(Model):
         self.schedule.step()
 
         agents = self.schedule.agents
-        ids = [ag.unique_id for ag in agents]
-        #row = len(self.last_interaction)
-        #col = len(self.last_interaction[0])
+        ids = [ag.unique_id for ag in agents if type(ag) is Human]
 
-        for i in ids:
-            for j in ids:
-                if self.last_interaction[i][j] > 0:
-                    self.friends_score[i][j] = self.friends_score[i][j] * 0.99
+        for column in ids:
+            values = self.friends_score[column].values
+            mask_values = self.last_interaction[column].values
+            mask = mask_values > 0
+            values[mask] *= self.decay
+            self.friends_score[column] = values
 
         self.last_interaction += 1
 
         # Save the statistics
         self.data_collector.collect(self)
 
-    def run_model(self, iterating=False, step_count=50):
+    def avg_friends_score(self):
+        mat = self.friends_score.copy().values
+        mat[mat == 0] = np.nan
+        means = np.nanmean(mat, axis=0)
+        means[np.isnan(means)] = 0
+        return np.mean(means)
+
+    def avg_friends_social_distance(self):
+        check = self.friends_score.copy().values
+        mat = self.social_distance.copy().values
+        mat[check == 0] = np.nan
+        means = np.nanmean(mat, axis=0)
+        means[np.isnan(means)] = 0
+        return np.mean(means)
+
+    def avg_friends_spatial_distance(self):
+        check = self.friends_score.copy().values
+        mat = self.spatial_distance.copy().values
+        mat[check == 0] = np.nan
+        means = np.nanmean(mat, axis=0)
+        means[np.isnan(means)] = 0
+        return np.mean(means)
+
+    def run_model(self, iterating=False, step_count=500):
         for i in range(step_count):
             self.step()
 

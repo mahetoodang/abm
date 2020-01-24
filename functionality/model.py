@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 import networkx as nx
-from time import time
 
 from mesa import Model
 from mesa.space import MultiGrid
@@ -122,8 +121,11 @@ class Friends(Model):
         self.data_collector.collect(self)
 
     def avg_friends_score(self):
-        scores = [ag.get_avg()[0] for ag in self.schedule.agents]
-        return np.mean(scores)
+        mat = self.friends_score.copy().values
+        mat[mat == 0] = np.nan
+        means = np.nanmean(mat, axis=0)
+        means[np.isnan(means)] = 0
+        return np.mean(means)
 
     def avg_friends_distance(self):
         scores = [ag.get_avg()[1] for ag in self.schedule.agents]

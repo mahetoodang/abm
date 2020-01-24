@@ -23,6 +23,7 @@ class Friends(Model):
             height=20, width=20,
             population_size=100,
             tolerance=0.3,
+            social_proximity=0.2,
             social_extroversion=0.6,
             decay=0.99,
             mobility = True,
@@ -34,10 +35,10 @@ class Friends(Model):
         self.height = height
         self.width = width
         self.population_size = population_size
-        self.social_extroversion = social_extroversion
-        self.decay = decay
         self.mobility = mobility
         self.hubs = hubs
+        self.social_extroversion = social_extroversion
+        self.decay = decay
 
         if mobility:
             self.speed_dist = [0.6, 0.3, 0.1]

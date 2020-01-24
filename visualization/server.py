@@ -68,14 +68,19 @@ friend_chart = ChartModule(
     data_collector_name='data_collector'
 )
 
-interaction_chart = ChartModule(
+social_chart = ChartModule(
     [{"Label": "Friends distance", "Color": "Blue"}],
+    data_collector_name='data_collector'
+)
+
+spatial_chart = ChartModule(
+    [{"Label": "Friends spatial distance", "Color": "Red"}],
     data_collector_name='data_collector'
 )
 
 canvas_element = CanvasGrid(draw_agent, 20, 20, 500, 500)
 
-element_list = [canvas_element, friend_chart, interaction_chart]
+element_list = [canvas_element, friend_chart, social_chart, spatial_chart]
 
 server = ModularServer(Friends, element_list, "Making friends", model_params)
 

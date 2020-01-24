@@ -8,13 +8,30 @@ from visualization.graph_visualization import \
 from visualization.model_report import create_model_report
 
 
-def main(iterations, loop):
+def main(iter, seg, mob, hub):
+
+    # Test/Info Print statement
+    parameters = [seg, mob, hub]
+    param_str = []
+    for param in parameters:
+        if param == True:
+            param_str.append("WITH ")
+        else:
+            param_str.append("WITHOUT ")
+    print('RUNNING Friends model for ' + str(iter) + ' ITERATION(S)\n' + param_str[0] +
+        "segregation,\n" + param_str[1] + "varying mobility and\n" +
+        param_str[2] + "social hubs.\n")
+
+    # Segregation level to 0
+    if seg == False:
+        s = 0
+
+    friends = Friends(segregation=s, mobility=mob, hubs=hub)
 
     all_dfs = []
-    friends = Friends()
-
-    if loop:
-        for i in range(iterations):
+    # Loop if iterations more than one
+    if iter > 1:
+        for i in range(iter):
             iteration_df = friends.run_model(iterating=True)
             all_dfs.append(iteration_df)
         all_dfs = pd.concat(all_dfs)
@@ -34,5 +51,6 @@ def main(iterations, loop):
 
 
 if __name__ == '__main__':
-    main(iterations=2, loop=False) # set loop to true to run model multiple times
-    #main(iterations=2, loop=True)  # set loop to true to run model multiple times
+    '''Run model'''
+    
+    main(iter=1, seg=False, mob=False, hub=False)

@@ -25,8 +25,9 @@ def main(iter, seg, mob, hub):
     # Tolerance level to 0
     if seg == False:
         s = 0
-
-    friends = Friends(tolerance=s, mobility=mob, hubs=hub)
+        friends = Friends(tolerance=s, mobility=mob, hubs=hub)
+    else:
+        friends = Friends(mobility=mob, hubs=hub)
 
     all_dfs = []
     # Loop if iterations more than one
@@ -37,7 +38,7 @@ def main(iter, seg, mob, hub):
         all_dfs = pd.concat(all_dfs)
         by_row_index = all_dfs.groupby(all_dfs.index)
         df_means = by_row_index.mean()
-        df_means.to_csv('data/sim_stats_avg_' + str(iterations) + '_runs.csv')
+        df_means.to_csv('data/sim_stats_avg_' + str(iter) + '_runs.csv')
 
     else:
         friends.run_model(iterating=False)
@@ -54,4 +55,4 @@ def main(iter, seg, mob, hub):
 if __name__ == '__main__':
     '''Run model: iterations, segregation, varying mobility, social hubs'''
 
-    main(iter=1, seg=False, mob=False, hub=False)
+    main(iter=2, seg=True, mob=True, hub=True)

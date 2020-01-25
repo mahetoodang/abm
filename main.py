@@ -38,6 +38,7 @@ def main(iter, seg, mob, hub):
         for i in range(iter):
             iteration_df = friends.run_model(iterating=True)
             all_dfs.append(iteration_df)
+            print(all_dfs)
             visualize_network(friends.M, friends.friends_score, i, iter)
             scores = distance_histograms(friends.M, friends, i, iter, scores)
         all_dfs = pd.concat(all_dfs)

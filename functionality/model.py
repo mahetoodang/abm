@@ -129,7 +129,7 @@ class Friends(Model):
 
         #ID and initial pos also used for node graph
         M = nx.Graph()
-        M.add_node((agent_id-1), pos=pos, speed=speed)
+        M.add_node((agent_id-1), pos=pos, speed=speed, character=character)
         self.M = nx.compose(self.M, M)
 
     def step(self):

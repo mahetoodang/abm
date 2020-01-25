@@ -8,9 +8,6 @@ from mesa.datacollection import DataCollector
 from mesa.time import RandomActivation
 
 from .agent import Human, Cell
-from .helpers import \
-    choose_speed, \
-    create_sim_stats
 from .schelling import SchellingModel
 
 
@@ -25,7 +22,7 @@ class Friends(Model):
             tolerance=0.3,
             social_extroversion=0.6,
             decay=0.99,
-            mobility = True,
+            mobility = 0.5,
             hubs = True
     ):
 
@@ -38,11 +35,6 @@ class Friends(Model):
         self.hubs = hubs
         self.social_extroversion = social_extroversion
         self.decay = decay
-
-        if mobility:
-            self.speed_dist = [0.6, 0.3, 0.1]
-        else:
-            self.speed_dist = [1, 0, 0]
 
         # Add a schedule and a grid
         self.schedule = RandomActivation(self)
@@ -80,7 +72,7 @@ class Friends(Model):
             if not schelling.running:
                 break
         for ag in schelling.schedule.agents:
-            speed = choose_speed(self.speed_dist)
+            speed = 1 + (np.random.random() < self.mobility) * 1
             [x, y] = ag.pos
             character = ag.character
             self.new_agent((x, y), speed, character)
@@ -186,7 +178,7 @@ class Friends(Model):
             mean = 0
         return mean
 
-    def run_model(self, iterating=False, step_count=500):
+    def run_model(self, step_count=500):
         for i in range(step_count):
             self.step()
 

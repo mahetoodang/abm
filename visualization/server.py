@@ -21,6 +21,10 @@ model_params = {
     "decay": UserSettableParameter(
         'slider', 'Friendship decay speed',
         value=0.99, min_value=0.01, max_value=0.99, step=0.01
+    ),
+    "mobility": UserSettableParameter(
+        'slider', 'Ratio of faster agents',
+        value=0.5, min_value=0, max_value=1, step=0.05
     )
 }
 
@@ -40,12 +44,10 @@ def draw_agent(agent):
         portrayal["Filled"] = "true"
         portrayal["Layer"] = 1
         portrayal["Shape"] = "circle"
-        if agent.speed == 3:
+        if agent.speed == 2:
             portrayal["r"] = 0.6
-        elif agent.speed == 2:
-            portrayal["r"] = 0.45
         else:
-            portrayal["r"] = 0.3
+            portrayal["r"] = 0.4
 
     elif type(agent) is Cell:
         color = colors.rgb2hex(cell_cmap(agent.value))

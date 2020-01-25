@@ -22,32 +22,33 @@ max_steps = 10
 distinct_samples = 5
 
 # Set the outputs
-model_reporters = {"Friends score": lambda m: m.avg_friends_score(), 
+model_reporters = {"Friends score": lambda m: m.avg_friends_score(),
                    "Friends distance": lambda m: m.avg_friends_social_distance(),
                    "Friends spatial distance": lambda m: m.avg_friends_spatial_distance()}
-            
+
 data = {}
 
 for i, var in enumerate(problem['names']):
     # Get the bounds for this variable and get <distinct_samples> samples within this space (uniform)
     samples = np.linspace(*problem['bounds'][i], num=distinct_samples)
-    
+
     # Keep in mind that wolf_gain_from_food should be integers. You will have to change
     # your code to acommidate for this or sample in such a way that you only get integers.
     #if var == 'wolf_gain_from_food':
     #    samples = np.linspace(*problem['bounds'][i], num=distinct_samples, dtype=int)
-    
-    batch = BatchRunner(Friends, 
+
+    batch = BatchRunner(Friends,
                         max_steps=max_steps,
                         iterations=replicates,
                         variable_parameters={var: samples},
                         model_reporters=model_reporters,
                         display_progress=True)
-    
+
     batch.run_all()
-    
+
     data[var] = batch.get_model_vars_dataframe()
-    
+
+print(data)
 # # plotting
 
 # def plot_param_var_conf(ax, df, var, param, i):
@@ -84,7 +85,7 @@ for i, var in enumerate(problem['names']):
 #     """
 
 #     f, axs = plt.subplots(3, figsize=(7, 10))
-    
+
 #     for i, var in enumerate(problem['names']):
 #         plot_param_var_conf(axs[i], data[var], var, param, i)
 

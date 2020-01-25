@@ -131,13 +131,6 @@ class Friends(Model):
         val = self.friends_score.values
         mask_val = self.last_interaction.copy().values
         val[mask_val != 0] *= self.decay
-        # old one for safety
-        # for column in ids:
-        #     values = self.friends_score[column].values
-        #     mask_values = self.last_interaction[column].values
-        #     mask = mask_values > 0
-        #     values[mask] *= self.decay
-        #     self.friends_score[column] = values
         self.last_interaction += 1
 
         # Save the statistics

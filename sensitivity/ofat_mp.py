@@ -39,12 +39,13 @@ for i, var in enumerate(problem['names']):
     #if var == 'wolf_gain_from_food':
     #    samples = np.linspace(*problem['bounds'][i], num=distinct_samples, dtype=int)
     
-    batch = BatchRunner(Friends, 
+    batch = BatchRunnerMP(Friends, 
                         max_steps=max_steps,
                         iterations=replicates,
                         variable_parameters={var: samples},
                         model_reporters=model_reporters,
-                        display_progress=True)
+                        display_progress=True,
+                        nr_processes=multiprocessing.cpu_count() - 1)
     
     batch.run_all()
     end = time.time()

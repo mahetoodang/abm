@@ -47,7 +47,6 @@ for i, var in enumerate(problem['names']):
     batch.run_all()
 
     data[var] = batch.get_model_vars_dataframe()
-
 print(data)
 # # plotting
 

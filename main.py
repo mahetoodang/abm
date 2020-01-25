@@ -8,6 +8,7 @@ from visualization.graph_visualization import \
     distance_histograms, \
     friends_speed_histogram
 from visualization.model_report import create_model_report
+from functionality.helpers import create_sim_stats
 
 
 def main(iter, seg, mob, hub):
@@ -35,12 +36,16 @@ def main(iter, seg, mob, hub):
     scores = np.zeros(friends.height + friends.width)
     # Loop if iterations more than one
     if iter > 1:
+        begin = time.time()
         for i in range(iter):
-            iteration_df = friends.run_model(iterating=True)
+            friends.run_model()
+            iteration_df = create_sim_stats(friends.schedule, friends.M, True)
             all_dfs.append(iteration_df)
-            print(all_dfs)
+            #print(all_dfs)
             visualize_network(friends.M, friends.friends_score, i, iter)
             scores = distance_histograms(friends.M, friends, i, iter, scores)
+        end = time.time()
+        print("Model run-time:", end - begin)
         all_dfs = pd.concat(all_dfs)
         by_row_index = all_dfs.groupby(all_dfs.index)
         df_means = by_row_index.mean()

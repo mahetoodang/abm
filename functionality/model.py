@@ -19,7 +19,7 @@ class Friends(Model):
     def __init__(
             self,
             height=20, width=20,
-            population_size=100,
+            population_size=10,
             tolerance=0.3,
             social_extroversion=0.6,
             decay=0.99,
@@ -179,10 +179,3 @@ class Friends(Model):
     def run_model(self, step_count=500):
         for i in range(step_count):
             self.step()
-
-        #file_name = 'data/' + 'sim_stats_' + str(self.population_size) + 'agents.csv'
-
-        #if iterating:
-        #    return create_sim_stats(self.schedule, self.M, True)
-        #else:
-        #    create_sim_stats(self.schedule, self.M, False, file_name)

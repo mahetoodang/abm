@@ -21,6 +21,6 @@ if __name__ == '__main__':
     pr.disable()
 
     s = io.StringIO()
-    ps = pstats.Stats(pr, stream=s).sort_stats('cumulative')
+    ps = pstats.Stats(pr, stream=s).sort_stats('tottime')
     ps.print_stats()
     print(s.getvalue())

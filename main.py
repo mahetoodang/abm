@@ -51,7 +51,6 @@ def main(iter, seg, mob, hub):
         df_means = by_row_index.mean()
         df_means.to_csv('data/sim_stats_avg_' + str(iter) + '_runs.csv')
 
-
     else:
         i = 0
         begin = time.time()

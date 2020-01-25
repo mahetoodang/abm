@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 import networkx as nx
-from time import  time
 
 from mesa import Model
 from mesa.space import MultiGrid
@@ -19,7 +18,7 @@ class Friends(Model):
     def __init__(
             self,
             height=20, width=20,
-            population_size=10,
+            population_size=100,
             tolerance=0.3,
             social_extroversion=0.6,
             decay=0.99,
@@ -29,7 +28,6 @@ class Friends(Model):
 
         super().__init__()
 
-        t_start = time()
         self.height = height
         self.width = width
         self.population_size = population_size
@@ -62,7 +60,6 @@ class Friends(Model):
         # This is required for the data_collector to work
         self.running = True
         self.data_collector.collect(self)
-        t_finish = time()
 
     def init_population(self, tolerance):
         schelling = SchellingModel(

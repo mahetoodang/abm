@@ -16,6 +16,7 @@ class Human(Agent):
         self.character = character
         self.interaction = False
         self.path = []
+        self.destinations = self.find_possible_destionations()
 
     def step(self):
         if self.is_home():
@@ -59,7 +60,6 @@ class Human(Agent):
             avg_spatial = spatial_sum
         else:
             for friend in friends:
-                #score_sum += self.model.friends_score[self.unique_id][friend.unique_id]
                 score_sum += self.model.friends_score.at[self.unique_id, friend.unique_id]
                 social_sum += abs(self.character - friend.character)
                 spatial_sum += self.get_distance(friend.pos)
@@ -71,8 +71,7 @@ class Human(Agent):
         return avg_score, avg_social, avg_spatial, count
 
     def interact_with_neighbors(self):
-        # needs performance profiling
-        neighbors = self.model.grid.get_neighbors(self.pos, True, include_center=True, radius=0)
+        neighbors = self.model.grid.get_cell_list_contents([self.pos])
         for neighbor in neighbors:
             if self.unique_id != neighbor.unique_id and type(neighbor) is Human:
 
@@ -86,16 +85,15 @@ class Human(Agent):
                 social_introversion = 1 - self.model.social_extroversion
 
                 if random.uniform(social_introversion, 1) < suitability:
-                    self.model.friends[i][j] = 1
-                    self.model.last_interaction[i][j] = 0
-                    self.model.last_interaction[j][i] = 0
+                    self.model.last_interaction.values[i-1,j-1] = 0
+                    self.model.last_interaction.values[j-1, i-1] = 0
 
                     rand_suit = random.random() * suitability
-                    self.model.friends_score[i][j] +=  rand_suit
-                    self.model.friends_score[j][i] +=  rand_suit
+                    self.model.friends_score.values[i-1, j-1] += rand_suit
+                    self.model.friends_score.values[j-1, i-1] += rand_suit
 
                     # Update cell values if running with social hubs
-                    if self.model.hubs == True:
+                    if self.model.hubs:
                         cell = self.get_cell()
                         cell.update(self.character, neighbor.character)
 
@@ -111,24 +109,20 @@ class Human(Agent):
 
     def create_trip(self):
         bounds = self.get_relative_bounds()
-        min_travel_time = 1
+
         path = False
         while not path:
-            min_trip_length = self.speed * min_travel_time
-            max_trip_length = self.speed * self.max_travel_time
             cells = []
-            for i in range(min_trip_length, max_trip_length):
-                positions = self.find_manhattan_neighbors(i)
-                for pos in positions:
-                    this_cell = self.model.grid.get_cell_list_contents([pos])
-                    for agent in this_cell:
-                        if type(agent) is Cell:
-                            cells.append(agent)
+            for pos in self.destinations:
+                this_cell = self.model.grid.get_cell_list_contents([pos])
+                for agent in this_cell:
+                    if type(agent) is Cell:
+                        cells.append(agent)
 
             # Weighted random choice based on cell value if running with social hubs
             if self.model.hubs:
-                value_sum = sum((1- abs(self.character - cell.value)) for cell in cells)
-                w = [(1-abs(self.character-cell.value))/value_sum for cell in cells]
+                value_sum = sum((1 - abs(self.character - cell.value)) for cell in cells)
+                w = [(1 - abs(self.character - cell.value)) / value_sum for cell in cells]
                 selected_cell = random.choices(population=cells, weights=w, k=1)
                 chosen_trip = selected_cell[0].pos
             else:
@@ -141,6 +135,7 @@ class Human(Agent):
             ]
             trip_length = np.abs(destination[0]) + np.abs(destination[1])
             path = find_path([0, 0], destination, trip_length + 2, bounds)
+
         self.path = path
 
     def go_home(self):
@@ -226,6 +221,14 @@ class Human(Agent):
                 if self.is_inside(p, max_x, max_y):
                     neighbors.append(p)
         return neighbors
+
+    def find_possible_destionations(self):
+        min_trip_length = self.speed
+        max_trip_length = self.speed * self.max_travel_time
+        destinations = []
+        for i in range(min_trip_length, max_trip_length):
+            destinations.extend(self.find_manhattan_neighbors(i))
+        return destinations
 
     def random_move(self):
         grid = self.model.grid

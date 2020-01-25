@@ -38,38 +38,20 @@ for i, var in enumerate(problem['names']):
     # your code to acommidate for this or sample in such a way that you only get integers.
     #if var == 'wolf_gain_from_food':
     #    samples = np.linspace(*problem['bounds'][i], num=distinct_samples, dtype=int)
-<<<<<<< HEAD
-    
-    batch = BatchRunnerMP(Friends, 
-=======
 
     batch = BatchRunner(Friends,
->>>>>>> 28bea1cf694c8a988e8a2e2a5cecf0db736eef86
                         max_steps=max_steps,
                         iterations=replicates,
                         variable_parameters={var: samples},
                         model_reporters=model_reporters,
-<<<<<<< HEAD
-                        display_progress=True,
-                        nr_processes=multiprocessing.cpu_count() - 1)
-    
+                        display_progress=True)
+                        #nr_processes=multiprocessing.cpu_count() - `1`)
+
     batch.run_all()
     end = time.time()
     print("Model run-time:", end - begin)
 
     data[var] = batch.get_model_vars_dataframe()
-
-    print(data)
-    
-=======
-                        display_progress=True)
-
-    batch.run_all()
-
-    data[var] = batch.get_model_vars_dataframe()
-
-print(data)
->>>>>>> 28bea1cf694c8a988e8a2e2a5cecf0db736eef86
 # # plotting
 
 def plot_param_var_conf(ax, df, var, param):
@@ -86,10 +68,8 @@ def plot_param_var_conf(ax, df, var, param):
     ax.set_ylabel(param)
 
 # def plot_all_vars(df, param):
-<<<<<<< HEAD
 #     F, axs = plt.subplots(3, figsize=(7, 10))
-    
-=======
+
 #     """
 #     Plots the parameters passed vs each of the output variables.
 
@@ -100,22 +80,16 @@ def plot_param_var_conf(ax, df, var, param):
 
 #     f, axs = plt.subplots(3, figsize=(7, 10))
 
->>>>>>> 28bea1cf694c8a988e8a2e2a5cecf0db736eef86
+
 #     for i, var in enumerate(problem['names']):
 #         plot_param_var_conf(axs[i], data[var], var, param, i)
 
 # for param in ('Friends score'):
 #     plot_all_vars(data, param)
 #     plt.show()
-<<<<<<< HEAD
+
 
 f, axs = plt.subplots(3, figsize=(7, 10))
 
 plot_param_var_conf(axs[0], data['tolerance'], 'tolerance', 'Friends score')
 plt.show()
-
-
-
-
-=======
->>>>>>> 28bea1cf694c8a988e8a2e2a5cecf0db736eef86

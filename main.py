@@ -50,7 +50,7 @@ def main(iter, seg, mob, hub):
     else:
         i = 0
         begin = time.time()
-        friends.run_model(iterating=False)
+        friends.run_model()
         end = time.time()
         print("Model run-time:", end - begin)
         df = friends.data_collector.get_model_vars_dataframe()

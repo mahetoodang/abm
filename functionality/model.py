@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import networkx as nx
+from time import  time
 
 from mesa import Model
 from mesa.space import MultiGrid
@@ -28,6 +29,7 @@ class Friends(Model):
 
         super().__init__()
 
+        t_start = time()
         self.height = height
         self.width = width
         self.population_size = population_size
@@ -60,6 +62,7 @@ class Friends(Model):
         # This is required for the data_collector to work
         self.running = True
         self.data_collector.collect(self)
+        t_finish = time()
 
     def init_population(self, tolerance):
         schelling = SchellingModel(
@@ -100,17 +103,19 @@ class Friends(Model):
 
     def init_distances(self):
         agents = self.schedule.agents
+        processed = []
         social_distance = self.init_matrix()
         spatial_distance = self.init_matrix()
         for ag1 in agents:
+            i = ag1.unique_id
             for ag2 in agents:
-                i = ag1.unique_id
                 j = ag2.unique_id
-                if i != j:
+                if i != j and j not in processed:
                     soc_dist = np.abs(ag1.character - ag2.character)
                     spat_dist = ag1.get_distance(ag2.pos)
-                    social_distance[i][j] = soc_dist
-                    spatial_distance[i][j] = spat_dist
+                    social_distance.values[i-1,j-1] = social_distance.values[j-1,i-1] = soc_dist
+                    spatial_distance.values[i-1][j-1] = spatial_distance.values[j-1][i-1] = spat_dist
+            processed.append(i)
         return [social_distance, spatial_distance]
 
     def new_agent(self, pos, speed, character):

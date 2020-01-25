@@ -1,5 +1,6 @@
 import numpy as np
 from random import choice
+from functools import reduce
 
 
 def find_path(start_pos, end_pos, length, bounds=False):
@@ -9,10 +10,8 @@ def find_path(start_pos, end_pos, length, bounds=False):
     if (length < manhattan) or (length - manhattan) % 2 != 0:
         return False
     steps = []
-    for i in range(np.abs(x)):
-        steps.append([int(np.sign(x) * 1), 0])
-    for i in range(np.abs(y)):
-        steps.append([0, int(np.sign(y)) * 1])
+    steps.extend([[int(np.sign(x) * 1), 0] for i in range(np.abs(x))])
+    steps.extend([[0, int(np.sign(y)) * 1] for i in range(np.abs(y))])
     missing_steps = length - manhattan
     while missing_steps > 0:
         [all_same, init_step] = moves_of_same_type(steps)
@@ -35,7 +34,6 @@ def find_path(start_pos, end_pos, length, bounds=False):
 
 
 def non_overlapping_path(steps, path, bounds):
-    # remaining = deepcopy(steps)
     remaining = list(map(list, steps))
     if not len(remaining):
         return path
@@ -43,7 +41,6 @@ def non_overlapping_path(steps, path, bounds):
     while len(move_options):
         move = choice(move_options)
         move_options.remove(move)
-        # new_path = deepcopy(path)
         new_path = list(map(list, path))
         new_path.append(move)
         not_overlapping = not does_overlap(new_path)
@@ -52,7 +49,6 @@ def non_overlapping_path(steps, path, bounds):
         else:
             in_bounds = True
         if not_overlapping and in_bounds:
-            # try_remaining = deepcopy(remaining)
             try_remaining = list(map(list, remaining))
             try_remaining.remove(move)
             found_path = non_overlapping_path(try_remaining, new_path, bounds)
@@ -67,14 +63,8 @@ def moves_of_same_type(steps):
     for step in steps:
         if step[0] != init_step[0] or step[1] != init_step[1]:
             all_same = False
-    return [all_same, init_step]
-
-
-def remove_from_array(base_array, test_array):
-    for index in range(len(base_array)):
-        if np.array_equal(base_array[index], test_array):
-            base_array.pop(index)
             break
+    return [all_same, init_step]
 
 
 def possible_options(remaining):
@@ -104,30 +94,19 @@ def does_overlap(steps):
 
 
 def out_of_bounds(path, bounds):
-    out = False
-    pos = [0, 0]
-    for step in path:
-        pos = [
-            pos[0] + step[0],
-            pos[1] + step[1]
-        ]
-        # x_out = not (bounds[0][0] <= pos[0] <= bounds[1][0])
-        # y_out = not (bounds[0][1] <= pos[1] <= bounds[1][1])
-        x_out = pos[0] < bounds[0][0] or pos[0] > bounds[1][0]
-        y_out = pos[1] < bounds[0][1] or pos[1] > bounds[1][1]
-        if x_out or y_out:
-            out = True
-            break
-    return out
+    pos = reduce(lambda a, b: [a[0] + b[0], a[1] + b[1]], path)
+    x_out = pos[0] < bounds[0][0] or pos[0] > bounds[1][0]
+    y_out = pos[1] < bounds[0][1] or pos[1] > bounds[1][1]
+    return x_out or y_out
 
 
 if __name__ == '__main__':
-    bounds = [[0, 0], [10, 10]]
-    steps = find_path([0, 0], [8, 4], 18, bounds)
+    bounds = [[0, 0], [30, 30]]
+    steps = find_path([0, 0], [40, 40], 70, bounds)
     pos = [0, 0]
-    for step in steps:
-        pos = [
-            pos[0] + step[0],
-            pos[1] + step[1]
-        ]
-        print(pos)
+    #for step in steps:
+    #    pos = [
+    #        pos[0] + step[0],
+    #        pos[1] + step[1]
+    #    ]
+    #    print(pos)

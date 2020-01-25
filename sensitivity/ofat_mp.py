@@ -1,3 +1,8 @@
+"""
+OFAT Analysis: replace names in problem dictionary with the variable name you are testing.
+See below for available parameter names.
+"""
+
 import sys
 sys.path.append('../')
 import time
@@ -14,8 +19,8 @@ import multiprocessing
 
 problem = {
     'num_vars': 1,
-    'names': ['tolerance','social_extroversion'],
-    'bounds': [[0.01, 0.99], [0.01, 0.99]]
+    'names': ['tolerance'], # available parameters: 'tolerance','social_extroversion','mobility','decay' 
+    'bounds': [[0.01, 0.99]]
 }
 begin = time.time()
 # Set the repetitions, the amount of steps, and the amount of distinct values per variable
@@ -52,7 +57,8 @@ for i, var in enumerate(problem['names']):
     print("Model run-time:", end - begin)
 
     data[var] = batch.get_model_vars_dataframe()
-# # plotting
+
+# plotting function
 
 def plot_param_var_conf(ax, df, var, param):
     x = df.groupby(var).mean().reset_index()[var]
@@ -67,31 +73,13 @@ def plot_param_var_conf(ax, df, var, param):
     ax.set_xlabel(var)
     ax.set_ylabel(param)
 
-# def plot_all_vars(df, param):
-#     F, axs = plt.subplots(3, figsize=(7, 10))
-
-#     """
-#     Plots the parameters passed vs each of the output variables.
-
-#     Args:
-#         df: dataframe that holds all data
-#         param: the parameter to be plotted
-#     """
-
-#     f, axs = plt.subplots(3, figsize=(7, 10))
-
-
-#     for i, var in enumerate(problem['names']):
-#         plot_param_var_conf(axs[i], data[var], var, param, i)
-
-# for param in ('Friends score'):
-#     plot_all_vars(data, param)
-#     plt.show()
-
+# plotting ofat analysis
 
 f, axs = plt.subplots(3, figsize=(7, 10))
-
-plot_param_var_conf(axs[0], data['tolerance'], 'tolerance', 'Friends score')
-plot_param_var_conf(axs[1], data['social_extroversion'], 'social_extroversion', 'Friends score')
-
+parameter = problem['names'][0]
+plot_param_var_conf(axs[0], data[parameter], parameter, 'Friends score')
+plot_param_var_conf(axs[1], data[parameter], parameter, 'Friends distance')
+plot_param_var_conf(axs[2], data[parameter], parameter, 'Friends spatial distance')
+plt.savefig('plots/' + str(parameter) + 'ofat.png')
 plt.show()
+

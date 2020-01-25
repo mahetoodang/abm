@@ -5,7 +5,7 @@
 *.pyc
 data/*
 .vscode/*
-
+sensitivity/plots/*
 
 # Herman
 .idea

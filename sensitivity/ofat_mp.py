@@ -19,7 +19,7 @@ import multiprocessing
 
 problem = {
     'num_vars': 1,
-    'names': ['tolerance'], # available parameters: 'tolerance','social_extroversion','mobility','decay' 
+    'names': ['mobility'], # available parameters: 'tolerance','social_extroversion','mobility','decay'
     'bounds': [[0.01, 0.99]]
 }
 begin = time.time()
@@ -43,15 +43,15 @@ for i, var in enumerate(problem['names']):
     # your code to acommidate for this or sample in such a way that you only get integers.
     #if var == 'wolf_gain_from_food':
     #    samples = np.linspace(*problem['bounds'][i], num=distinct_samples, dtype=int)
-    
-    batch = BatchRunnerMP(Friends, 
+
+    batch = BatchRunnerMP(Friends,
                         max_steps=max_steps,
                         iterations=replicates,
                         variable_parameters={var: samples},
                         model_reporters=model_reporters,
                         display_progress=True,
                         nr_processes=multiprocessing.cpu_count() - 1)
-    
+
     batch.run_all()
     end = time.time()
     print("Model run-time:", end - begin)
@@ -82,4 +82,3 @@ plot_param_var_conf(axs[1], data[parameter], parameter, 'Friends distance')
 plot_param_var_conf(axs[2], data[parameter], parameter, 'Friends spatial distance')
 plt.savefig('plots/' + str(parameter) + 'ofat.png')
 plt.show()
-

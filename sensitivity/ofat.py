@@ -19,14 +19,14 @@ import multiprocessing
 
 problem = {
     'num_vars': 1,
-    'names': ['tolerance'], # available parameters: 'tolerance','social_extroversion','mobility','decay' 
+    'names': ['mobility'], # available parameters: 'tolerance','social_extroversion','mobility','decay'
     'bounds': [[0.01, 0.99]]
 }
 begin = time.time()
 # Set the repetitions, the amount of steps, and the amount of distinct values per variable
-replicates = 5
-max_steps = 5
-distinct_samples = 5
+replicates = 100
+max_steps = 1000
+distinct_samples = 15
 
 # Set the outputs
 model_reporters = {"Friends score": lambda m: m.avg_friends_score(),
@@ -43,14 +43,14 @@ for i, var in enumerate(problem['names']):
     # your code to acommidate for this or sample in such a way that you only get integers.
     #if var == 'wolf_gain_from_food':
     #    samples = np.linspace(*problem['bounds'][i], num=distinct_samples, dtype=int)
-    
-    batch = BatchRunner(Friends, 
+
+    batch = BatchRunner(Friends,
                         max_steps=max_steps,
                         iterations=replicates,
                         variable_parameters={var: samples},
                         model_reporters=model_reporters,
                         display_progress=True)
-    
+
     batch.run_all()
     end = time.time()
     print("Model run-time:", end - begin)
@@ -81,4 +81,3 @@ plot_param_var_conf(axs[1], data[parameter], parameter, 'Friends distance')
 plot_param_var_conf(axs[2], data[parameter], parameter, 'Friends spatial distance')
 plt.savefig('plots/' + str(parameter) + 'ofat.png')
 plt.show()
-

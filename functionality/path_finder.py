@@ -9,10 +9,14 @@ def find_path(start_pos, end_pos, length, bounds=False):
     manhattan = np.abs(x) + np.abs(y)
     if (length < manhattan) or (length - manhattan) % 2 != 0:
         return False
+
+    # all steps that have to be taken for shortest path are added
     steps = []
     steps.extend([[int(np.sign(x) * 1), 0] for i in range(np.abs(x))])
     steps.extend([[0, int(np.sign(y)) * 1] for i in range(np.abs(y))])
     missing_steps = length - manhattan
+
+    # if there are extra steps to be taken, those are added
     while missing_steps > 0:
         [all_same, init_step] = moves_of_same_type(steps)
         if not all_same:
@@ -30,6 +34,9 @@ def find_path(start_pos, end_pos, length, bounds=False):
                 steps.append([0, 1])
                 steps.append([0, -1])
         missing_steps -= 2
+
+    # non-overlapping path is constructed given the array of
+    # steps that have to be taken
     return non_overlapping_path(steps, [], bounds)
 
 
@@ -58,6 +65,7 @@ def non_overlapping_path(steps, path, bounds):
 
 
 def moves_of_same_type(steps):
+    # checks if all moves in path are the same
     init_step = steps[0]
     all_same = True
     for step in steps:
@@ -68,6 +76,7 @@ def moves_of_same_type(steps):
 
 
 def possible_options(remaining):
+    # checks which steps are possible to take
     cardinals = [[1, 0], [0, 1], [-1, 0], [0, -1]]
     possible = []
     for c in cardinals:
@@ -79,6 +88,7 @@ def possible_options(remaining):
 
 
 def does_overlap(steps):
+    # finds out whether the current path is self-overlapping
     pos = [0, 0]
     path = [[0, 0]]
     for step in steps:
@@ -94,19 +104,8 @@ def does_overlap(steps):
 
 
 def out_of_bounds(path, bounds):
+    # checks if the current path goes out of bounds
     pos = reduce(lambda a, b: [a[0] + b[0], a[1] + b[1]], path)
     x_out = pos[0] < bounds[0][0] or pos[0] > bounds[1][0]
     y_out = pos[1] < bounds[0][1] or pos[1] > bounds[1][1]
     return x_out or y_out
-
-
-if __name__ == '__main__':
-    bounds = [[0, 0], [30, 30]]
-    steps = find_path([0, 0], [40, 40], 70, bounds)
-    pos = [0, 0]
-    #for step in steps:
-    #    pos = [
-    #        pos[0] + step[0],
-    #        pos[1] + step[1]
-    #    ]
-    #    print(pos)

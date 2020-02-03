@@ -109,7 +109,7 @@ class Human(Agent):
             # if other human agent on current position
             if self.unique_id != neighbor.unique_id and type(neighbor) is Human:
 
-                # only the upper part of matrix is used, thus the ordering of indexes
+                # matrix indexing
                 i = np.max([self.unique_id, neighbor.unique_id])
                 j = np.min([self.unique_id, neighbor.unique_id])
 
@@ -141,7 +141,6 @@ class Human(Agent):
         '''
         Returns cell for current position
         '''
-
         this_cell = self.model.grid.get_cell_list_contents([self.pos])
         for agent in this_cell:
             if type(agent) is Cell:
@@ -153,9 +152,9 @@ class Human(Agent):
         '''
         bounds = self.get_relative_bounds()
 
-        # get all possible destination cells
         path = False
         while not path:
+            # get all possible destination cells
             cells = []
             for pos in self.destinations:
                 this_cell = self.model.grid.get_cell_list_contents([pos])

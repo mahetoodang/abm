@@ -66,7 +66,7 @@ class Human(Agent):
 
     def get_avg(self):
         '''
-        -
+        Returns average friends score, spatial distance, social distance.
         '''
         friends = self.get_friends()
 
@@ -92,8 +92,15 @@ class Human(Agent):
         return avg_score, avg_social, avg_spatial, count
 
     def interact_with_neighbors(self):
+        '''
+        Interact with other Human agents on same cell.
+        '''
+
+        # get agents on current position
         neighbors = self.model.grid.get_cell_list_contents([self.pos])
         for neighbor in neighbors:
+
+            # if other human agent on current position
             if self.unique_id != neighbor.unique_id and type(neighbor) is Human:
 
                 # only the upper part of matrix is used, thus the ordering of indexes
@@ -105,10 +112,13 @@ class Human(Agent):
                 suitability = 1 - np.abs(character_dist)
                 social_introversion = 1 - self.model.social_extroversion
 
+                # interact
                 if random.uniform(social_introversion, 1) < suitability:
+                    # reset 'last interaction' count (decay)
                     self.model.last_interaction.values[i-1,j-1] = 0
                     self.model.last_interaction.values[j-1, i-1] = 0
 
+                    # update friends score
                     rand_suit = random.random() * suitability
                     self.model.friends_score.values[i-1, j-1] += rand_suit
                     self.model.friends_score.values[j-1, i-1] += rand_suit

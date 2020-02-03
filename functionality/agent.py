@@ -7,6 +7,9 @@ from .cell import Cell
 
 
 class Human(Agent):
+    '''
+    Human class
+    '''
     def __init__(self, unique_id, model, pos, character, speed):
         super().__init__(unique_id, model)
         self.pos = pos
@@ -19,21 +22,34 @@ class Human(Agent):
         self.destinations = self.find_possible_destionations()
 
     def step(self):
+        '''
+        Execute step
+        '''
+
+        # create new trip if home
         if self.is_home():
             self.create_trip()
+
+        # move if interacting and trip not completed
         if self.interaction and len(self.path):
             self.move()
+        # return home if trip completed
         else:
             if not len(self.path):
                 self.go_home()
 
+        # interact with neighbors if not yet interacting
         if not self.interaction:
             self.interact_with_neighbors()
 
+        # move if still not interacting and trip not completed
         if not self.interaction and len(self.path):
             self.move()
 
     def get_friends(self):
+        '''
+        Returns list of friends.
+        '''
         others = self.model.friends_score[self.unique_id]
         ids = others[others > 0].index
         friends = []
@@ -43,10 +59,15 @@ class Human(Agent):
         return friends
 
     def get_distance(self, point):
-        # returns manhattan distance to point
+        '''
+        Returns manhattan distance from current position to point on grid.
+        '''
         return np.abs(self.pos[0] - point[0]) + np.abs(self.pos[1] - point[1])
 
     def get_avg(self):
+        '''
+        -
+        '''
         friends = self.get_friends()
 
         count = len(friends)

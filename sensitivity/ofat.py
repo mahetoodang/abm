@@ -23,6 +23,7 @@ problem = {
     'bounds': [[0.01, 0.99]]
 }
 begin = time.time()
+
 # Set the repetitions, the amount of steps, and the amount of distinct values per variable
 replicates = 100
 max_steps = 1000
@@ -36,13 +37,8 @@ model_reporters = {"Friends score": lambda m: m.avg_friends_score(),
 data = {}
 
 for i, var in enumerate(problem['names']):
-    # Get the bounds for this variable and get <distinct_samples> samples within this space (uniform)
+    # get the bounds for this variable and get <distinct_samples> samples within this space (uniform)
     samples = np.linspace(*problem['bounds'][i], num=distinct_samples)
-
-    # Keep in mind that wolf_gain_from_food should be integers. You will have to change
-    # your code to acommidate for this or sample in such a way that you only get integers.
-    #if var == 'wolf_gain_from_food':
-    #    samples = np.linspace(*problem['bounds'][i], num=distinct_samples, dtype=int)
 
     batch = BatchRunner(Friends,
                         max_steps=max_steps,
@@ -58,7 +54,6 @@ for i, var in enumerate(problem['names']):
     data[var] = batch.get_model_vars_dataframe()
 
 # plotting function
-
 def plot_param_var_conf(ax, df, var, param):
     x = df.groupby(var).mean().reset_index()[var]
     y = df.groupby(var).mean()[param]

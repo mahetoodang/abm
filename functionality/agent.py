@@ -8,8 +8,12 @@ from .cell import Cell
 
 class Human(Agent):
     '''
-    Human class
+    Human class that keeps track of the agent's: id, home location,
+    current position, maximum travel time, travel speed, character (score),
+    current path, possible trip destinations and whether the agent is
+    currently interacting.
     '''
+
     def __init__(self, unique_id, model, pos, character, speed):
         super().__init__(unique_id, model)
         self.pos = pos

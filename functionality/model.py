@@ -36,32 +36,39 @@ class Friends(Model):
         self.social_extroversion = social_extroversion
         self.decay = decay
 
-        # Add a schedule and a grid
+        # add a schedule and a grid
         self.schedule = RandomActivation(self)
         self.grid = MultiGrid(self.width, self.height, torus=False)
 
+        # add datacollector
         self.data_collector = DataCollector({
             "Friends score": lambda m: self.avg_friends_score(),
             "Friends distance": lambda m: self.avg_friends_social_distance(),
             "Friends spatial distance": lambda m: self.avg_friends_spatial_distance()
         })
 
-        # Create the population
+        # create the population
         self.M = nx.Graph()
         self.init_population(tolerance)
         self.init_cells()
 
+        # matrices to keep track of friends, friends scores, interaction count
+        # time since last interaction, social distance and spatial distance
         self.friends = self.init_matrix() # not used
         self.friends_score = self.init_matrix()
         self.interactions = self.init_matrix()
         self.last_interaction = self.init_matrix()
         [self.social_distance, self.spatial_distance] = self.init_distances()
 
-        # This is required for the data_collector to work
+        # this is required for the data_collector to work
         self.running = True
         self.data_collector.collect(self)
 
     def init_population(self, tolerance):
+        '''
+        Runs Schelling model based on grid size, tolerance level and population
+        size. Innitializes population (Human agents) and home locations.
+        '''
         schelling = SchellingModel(
             self.height, self.width,
             tolerance,
@@ -78,20 +85,28 @@ class Friends(Model):
             self.new_agent((x, y), speed, character)
 
     def init_cells(self):
-        # Initialize cell values
+        '''
+        Innitializes cell population for grid.
+        '''
+
+        # initialize cells and values for model with social hubs.
         if self.hubs:
             for _, x, y in self.grid.coord_iter():
                 agent_id = self.next_id()
                 cell = Cell(agent_id, self, (x, y), 0.5)
                 self.grid.place_agent(cell, (x, y))
+        # initialize cells for model without social hubs.
         else:
             for _, x, y in self.grid.coord_iter():
                 agent_id = self.next_id()
                 cell = Cell(agent_id, self, (x, y), 0)
                 self.grid.place_agent(cell, (x, y))
 
-
     def init_matrix(self):
+        '''
+        Creates and returns zeros DataFrame with the Human agent id's used as labels.
+        '''
+
         agents = self.schedule.agents
         ids = [ag.unique_id for ag in agents if type(ag) is Human]
         n = len(ids)
@@ -99,6 +114,11 @@ class Friends(Model):
         return mat
 
     def init_distances(self):
+        '''
+        Creates and returns two matrices to keep track of social and spatial
+        distances between pairs of Human agents.
+        '''
+
         agents = self.schedule.agents
         processed = []
         social_distance = self.init_matrix()
@@ -116,17 +136,24 @@ class Friends(Model):
         return [social_distance, spatial_distance]
 
     def new_agent(self, pos, speed, character):
+        '''
+        Create new Human agent
+        '''
+
         agent_id = self.next_id()
         agent = Human(agent_id, self, pos, character, speed)
         self.grid.place_agent(agent, pos)
         self.schedule.add(agent)
 
-        #ID and initial pos also used for node graph
+        # ID and initial pos also used for node graph
         M = nx.Graph()
         M.add_node((agent_id-1), pos=pos, speed=speed, character=character)
         self.M = nx.compose(self.M, M)
 
     def step(self):
+        '''
+        Execute next time step.
+        '''
         self.schedule.step()
 
         # friends_score decay functionality
@@ -139,6 +166,10 @@ class Friends(Model):
         self.data_collector.collect(self)
 
     def avg_friends_score(self):
+        '''
+        Return average friends score of population.
+        '''
+
         mat = self.friends_score.copy().values
         mat[mat == 0] = np.nan
         try:
@@ -150,6 +181,10 @@ class Friends(Model):
         return mean
 
     def avg_friends_social_distance(self):
+        '''
+        Returns average social distance between two friends.
+        '''
+
         check = self.friends_score.copy().values
         mat = self.social_distance.copy().values
         mat[check == 0] = np.nan
@@ -162,6 +197,10 @@ class Friends(Model):
         return mean
 
     def avg_friends_spatial_distance(self):
+        '''
+        Returns average spatial distance between two friends.
+        '''
+
         check = self.friends_score.copy().values
         mat = self.spatial_distance.copy().values
         mat[check == 0] = np.nan
@@ -174,5 +213,9 @@ class Friends(Model):
         return mean
 
     def run_model(self, step_count=500):
+        '''
+        Runs model.
+        '''
+        
         for i in range(step_count):
             self.step()

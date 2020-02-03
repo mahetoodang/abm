@@ -4,7 +4,7 @@ import numpy as np
 import seaborn as sns
 
 def visualize_network(M, graph, num, iterations):
-    # to plot the nodes and edges of friendships
+    # to plot the nodes and edges of friendships. Only plots at last iteration, does not take average.
     scores = graph.to_numpy()
     for j in range(len(scores)):
         for t in range(len(scores[0])):
@@ -190,7 +190,6 @@ def distance_histograms(M, friends, num, iterations, scores):
 def friends_speed_histogram(M):
     # creating stacked histogram
     edges = list(M.edges())
-    # need to get farthest distance (right now 25ish) automatically
     max_dist = 30
     slow = np.zeros(max_dist)
     moderate = np.zeros(max_dist)

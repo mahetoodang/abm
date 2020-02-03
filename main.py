@@ -69,4 +69,11 @@ def main(iter, seg, mob, hub):
 
 if __name__ == '__main__':
     '''Run model: iterations, segregation, varying mobility, social hubs'''
-    main(iter=1, seg=False, mob=False, hub=False)
+    # READ ME FIRST
+    # MOBILITY set either to 0.5 for True or 0/False for False. In the latter case it gives speed 1 to everybody,
+    # in the former it gives speed 1 and 2 to roughly half the population. Changing this value between 0 and 1,
+    #  changes the distribution of agents receiving a speed of 2.
+    # if you would like to change the values of the other input parameters to something other than nominal values
+    # you can change them in init in model.py (e.g tolerance and social extroversion). For tolerance you must also
+    # turn seg to True.
+    main(iter=1, seg=False, mob=0, hub=False)

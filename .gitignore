@@ -6,6 +6,7 @@
 data/*
 .vscode/*
 sensitivity/plots/*
+sensitivity/data/*
 
 # Herman
 .idea

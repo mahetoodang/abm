@@ -23,7 +23,7 @@ class Human(Agent):
 
     def step(self):
         '''
-        Execute step
+        Execute step (move/interact/create new trip/go home).
         '''
 
         # create new trip if home
@@ -62,12 +62,14 @@ class Human(Agent):
         '''
         Returns manhattan distance from current position to point on grid.
         '''
+
         return np.abs(self.pos[0] - point[0]) + np.abs(self.pos[1] - point[1])
 
     def get_avg(self):
         '''
         Returns average friends score, spatial distance, social distance.
         '''
+
         friends = self.get_friends()
 
         count = len(friends)
@@ -123,7 +125,7 @@ class Human(Agent):
                     self.model.friends_score.values[i-1, j-1] += rand_suit
                     self.model.friends_score.values[j-1, i-1] += rand_suit
 
-                    # Update cell values if running with social hubs
+                    # update cell values if running with social hubs
                     if self.model.hubs:
                         cell = self.get_cell()
                         cell.update(self.character, neighbor.character)
@@ -132,15 +134,22 @@ class Human(Agent):
                 break
 
     def get_cell(self):
-        # Get cell for current position
+        '''
+        Returns cell for current position
+        '''
+
         this_cell = self.model.grid.get_cell_list_contents([self.pos])
         for agent in this_cell:
             if type(agent) is Cell:
                 return agent
 
     def create_trip(self):
+        '''
+        Generates path/trip to random destination.
+        '''
         bounds = self.get_relative_bounds()
 
+        # get all possible destination cells
         path = False
         while not path:
             cells = []
@@ -150,7 +159,7 @@ class Human(Agent):
                     if type(agent) is Cell:
                         cells.append(agent)
 
-            # Weighted random choice based on cell value if running with social hubs
+            # weighted random choice based on cell value if running with social hubs
             if self.model.hubs:
                 value_sum = sum((1 - abs(self.character - cell.value)) for cell in cells)
                 w = [(1 - abs(self.character - cell.value)) / value_sum for cell in cells]
@@ -160,6 +169,7 @@ class Human(Agent):
                 selected_cell = random.choice(cells)
                 chosen_trip = selected_cell.pos
 
+            # find path to chosen destination
             destination = [
                 chosen_trip[0] - self.pos[0],
                 chosen_trip[1] - self.pos[1]
@@ -170,6 +180,10 @@ class Human(Agent):
         self.path = path
 
     def go_home(self):
+        '''
+        Generate path/trip from current location to home.
+        '''
+
         bounds = self.get_relative_bounds()
         destination = self.relative_home_location()
         trip_length = np.abs(destination[0]) + np.abs(destination[1])
@@ -177,24 +191,41 @@ class Human(Agent):
         self.path = path
 
     def has_friends(self):
+        '''
+        Returns True if agent has friends.
+        '''
+
         friend_count = self.nr_friends()
         return friend_count > 0
 
     def nr_friends(self):
+        '''
+        Returns number of friends.
+        '''
+
         friends_df = self.model.friends
         uid = self.unique_id
         friend_count = np.sum(friends_df[uid].values) + np.sum(friends_df.loc[uid].values)
         return friend_count
 
     def is_home(self):
+        '''
+        Returns True if agent is home.
+        '''
         return self.pos[0] == self.home[0] and self.pos[1] == self.home[1]
 
     def relative_home_location(self):
+        '''
+        Returns location relative to home location.
+        '''
         x = self.home[0] - self.pos[0]
         y = self.home[1] - self.pos[1]
         return [x, y]
 
     def move(self):
+        '''
+        Perform next move/stap in path.
+        '''
         i = 0
         while i < self.speed:
             if len(self.path):
@@ -209,6 +240,9 @@ class Human(Agent):
                 break
 
     def get_relative_bounds(self):
+        '''
+
+        '''
         # returns [ [min_x, min_y], [max_x, max_y] ]
         # showing the moving limits of the agents
         [min_x, min_y] = [0, 0]

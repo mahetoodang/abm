@@ -241,7 +241,7 @@ class Human(Agent):
 
     def get_relative_bounds(self):
         '''
-
+        Returns grid bounds relative to current position.
         '''
         # returns [ [min_x, min_y], [max_x, max_y] ]
         # showing the moving limits of the agents
@@ -255,11 +255,19 @@ class Human(Agent):
         return bounds
 
     def is_inside(self, p, max_x, max_y):
+        '''
+        Checks if coordinate p is within grid.
+        '''
+
         x_in = 0 <= p[0] <= max_x
         y_in = 0 <= p[1] <= max_y
         return x_in and y_in
 
     def find_manhattan_neighbors(self, radius):
+        '''
+        Returns coordinates of neighboring cells.
+        '''
+
         neighbors = []
         pos = self.pos
         [max_x, max_y] = [self.model.grid.width - 1, self.model.grid.height - 1]
@@ -288,6 +296,11 @@ class Human(Agent):
         return neighbors
 
     def find_possible_destionations(self):
+        '''
+        Returns coordinates of all possible destinations within range (based on
+        speed and maximum travel time).
+        '''
+
         min_trip_length = self.speed
         max_trip_length = self.speed * self.max_travel_time
         destinations = []
@@ -296,6 +309,9 @@ class Human(Agent):
         return destinations
 
     def random_move(self):
+        '''
+        Execute random move.
+        '''
         grid = self.model.grid
         neighborhood = grid.get_neighborhood(self.pos, True, radius=1)
         grid.move_agent(self, random.choice(neighborhood))

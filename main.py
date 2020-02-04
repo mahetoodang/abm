@@ -76,4 +76,4 @@ if __name__ == '__main__':
     # if you would like to change the values of the other input parameters to something other than nominal values
     # you can change them in init in model.py (e.g tolerance and social extroversion). For tolerance you must also
     # turn seg to True.
-    main(iter=1, seg=False, mob=0, hub=False)
+    main(iter=1, seg=False, mob=0.5, hub=False)

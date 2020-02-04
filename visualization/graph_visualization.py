@@ -13,8 +13,7 @@ def visualize_network(M, graph, num, iterations):
 
     # agents
     slow = {idx: data['pos'] for (idx, data) in M.nodes(data=True) if data['speed'] == 1}
-    moderate = {idx: data['pos'] for (idx, data) in M.nodes(data=True) if data['speed'] == 2}
-    fast = {idx: data['pos'] for (idx, data) in M.nodes(data=True) if data['speed'] == 3}
+    fast = {idx: data['pos'] for (idx, data) in M.nodes(data=True) if data['speed'] == 2}
     
      #draw only once! Last iteration
     if (num+1)== iterations:
@@ -23,12 +22,6 @@ def visualize_network(M, graph, num, iterations):
             nx.get_node_attributes(M, 'pos'),
             nodelist=slow, node_size=50,
             node_color='gray'
-        )
-        nx.draw_networkx_nodes(
-            M,
-            nx.get_node_attributes(M, 'pos'),
-            nodelist=moderate, node_size=50,
-            node_color='yellow'
         )
         nx.draw_networkx_nodes(
             M,
@@ -192,7 +185,6 @@ def friends_speed_histogram(M):
     edges = list(M.edges())
     max_dist = 30
     slow = np.zeros(max_dist)
-    moderate = np.zeros(max_dist)
     fast = np.zeros(max_dist)
     speeds = nx.get_node_attributes(M, 'speed')
     pos = nx.get_node_attributes(M, 'pos')
@@ -205,27 +197,21 @@ def friends_speed_histogram(M):
         if speeds[p1] == 1:
             slow[index] += 1
         elif speeds[p1] == 2:
-            moderate[index] += 1
-        else:
             fast[index] += 1
 
         if speeds[p2] == 1:
             slow[index] += 1
         elif speeds[p2] == 2:
-            moderate[index] += 1
-        else:
             fast[index] += 1
 
     bins = np.arange(max_dist)
 
-    fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(9, 4))
-    [ax1, ax2, ax3] = ax
+    fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(9, 4))
+    [ax1, ax2] = ax
     ax1.hist(slow, bins, color="violet", density=True)
-    ax2.hist(moderate, bins, color="blue", density=True)
-    ax3.hist(fast, bins, color="red", density=True)
+    ax2.hist(fast, bins, color="blue", density=True)
     ax1.title.set_text('Slow')
-    ax2.title.set_text('Moderate')
-    ax3.title.set_text('Fast')
+    ax2.title.set_text('Fast')
     plt.setp(ax, ylim=(0, 1), xlabel="Distance to friend", ylabel="Proportion of friends")
     plt.tight_layout()
     plt.savefig('data/img/friend_speed.png')

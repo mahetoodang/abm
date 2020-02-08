@@ -1,5 +1,7 @@
 # FriendSim Agent Based Model 🤝
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ## Requirements
 * python 3.6.4
 * pip

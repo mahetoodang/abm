@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import time
+from os import path, makedirs
 
 from functionality.model import Friends
 from visualization.graph_visualization import \
@@ -49,7 +50,7 @@ def main(iter, seg, mob, hub):
         all_dfs = pd.concat(all_dfs)
         by_row_index = all_dfs.groupby(all_dfs.index)
         df_means = by_row_index.mean()
-        df_means.to_csv('data/sim_stats_avg_' + str(iter) + '_runs.csv')
+        df_means.to_csv('data/avg_stats/sim_stats_avg_' + str(iter) + '_runs.csv')
 
     else:
         i = 0
@@ -64,7 +65,9 @@ def main(iter, seg, mob, hub):
         print(df)
         #print("Number of pairs of friends: ", df['Friends'].iloc[-1])
         #print("Number of interactions: ", df['Interactions'].iloc[-1])
-        create_model_report(html_report=False)  # set html_report to True to produce pandas_profiling report
+        timestr = time.strftime("%Y%m%d-%H%M%S")
+        stats_df = create_sim_stats(friends.schedule, friends.M, False, 'data/stats/' + timestr + '.csv')
+        create_model_report(html_report=True)  # set html_report to True to produce pandas_profiling report
 
 
 if __name__ == '__main__':
@@ -76,4 +79,18 @@ if __name__ == '__main__':
     # if you would like to change the values of the other input parameters to something other than nominal values
     # you can change them in init in model.py (e.g tolerance and social extroversion). For tolerance you must also
     # turn seg to True.
+
+    img_dir = path.exists('data/img')
+    stats_dir = path.exists('data/stats')
+    avg_dir = path.exists('data/avg_stats')
+    html_dir = path.exists('data/html')
+
+    if (img_dir & stats_dir & avg_dir & html_dir):
+        pass
+    else:
+        makedirs('data/img')
+        makedirs('data/stats')
+        makedirs('data/avg_stats')
+        makedirs('data/html')
+
     main(iter=1, seg=False, mob=0.5, hub=False)

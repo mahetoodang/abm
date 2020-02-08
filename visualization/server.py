@@ -10,7 +10,12 @@ from functionality.model import Friends
 from functionality.agent import Human
 from functionality.cell import Cell
 
+'''
+Mesa-based user interface for the FriendSim Agent Based model.
+Ability to configure model parameters and visualise key statistics.
+'''
 
+# Setting model parameters
 model_params = {
     "population_size": UserSettableParameter('slider', 'Population size', 1, 1, 500),
     "tolerance": UserSettableParameter('slider', 'Tolerance level', value=0.2, min_value=0, max_value=1, step=0.05),
@@ -28,10 +33,11 @@ model_params = {
     )
 }
 
+# Setting color maps
 agent_cmap = cm.get_cmap('Greys', 255)
 cell_cmap = cm.get_cmap('YlGn', 255)
 
-
+# Defining agent portrayal
 def draw_agent(agent):
     if agent is None:
         return
@@ -60,7 +66,7 @@ def draw_agent(agent):
 
     return portrayal
 
-
+# Generating animated charts
 friend_chart = ChartModule(
     [{"Label": "Friends score", "Color": "Black"}],
     data_collector_name='data_collector'
@@ -76,6 +82,7 @@ spatial_chart = ChartModule(
     data_collector_name='data_collector'
 )
 
+# Drawing the grid, initialising elements and launching server
 canvas_element = CanvasGrid(draw_agent, 20, 20, 500, 500)
 
 element_list = [canvas_element, friend_chart, social_chart, spatial_chart]

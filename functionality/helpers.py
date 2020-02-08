@@ -15,6 +15,9 @@ def choose_speed(speed_dist):
 
 
 def create_segregation_centers(seg_number, width, height):
+    '''
+    Create segregation centers for Schelling model
+    '''
     if seg_number == 2:
         placements = [
             [int(0.8 * width), int(0.8 * height)],
@@ -32,6 +35,9 @@ def create_segregation_centers(seg_number, width, height):
 
 
 def create_sim_stats(schedule, M, iterating, file_name=None):
+    '''
+    Create aggregated simulation statistics
+    '''
     sim_stats = pd.DataFrame()
 
     for agent in schedule.agents:
@@ -50,5 +56,3 @@ def create_sim_stats(schedule, M, iterating, file_name=None):
         return sim_stats
     else:
         sim_stats.to_csv(file_name)
-    
-        

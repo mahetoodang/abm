@@ -7,6 +7,9 @@ sys.path.append('../')
 
 from functionality.schelling import SchellingModel
 
+'''
+Schelling server test
+'''
 
 model_params = {
     "height": 20,

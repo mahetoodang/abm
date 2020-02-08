@@ -5,6 +5,9 @@ import os
 import glob
 from pandas_profiling import ProfileReport
 
+'''Automated generation of HTML data report to
+be opened inside webbrowser'''
+
 def create_model_report(html_report=True):
     if html_report == True:
         file_list = glob.glob('data/stats/*')

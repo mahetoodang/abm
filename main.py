@@ -14,7 +14,7 @@ from functionality.helpers import create_sim_stats
 
 def main(iter, seg, mob, hub):
 
-    # Test/Info Print statement
+    # Print model parameters to console
     parameters = [seg, mob, hub]
     param_str = []
     for param in parameters:
@@ -42,7 +42,6 @@ def main(iter, seg, mob, hub):
             friends.run_model()
             iteration_df = create_sim_stats(friends.schedule, friends.M, True)
             all_dfs.append(iteration_df)
-            #print(all_dfs)
             visualize_network(friends.M, friends.friends_score, i, iter)
             scores = distance_histograms(friends.M, friends, i, iter, scores)
         end = time.time()
@@ -53,6 +52,7 @@ def main(iter, seg, mob, hub):
         df_means.to_csv('data/avg_stats/sim_stats_avg_' + str(iter) + '_runs.csv')
 
     else:
+        # Running model once (without iterations)
         i = 0
         begin = time.time()
         friends.run_model()
@@ -63,8 +63,6 @@ def main(iter, seg, mob, hub):
         distance_histograms(friends.M, friends, i, iter, scores)
         friends_speed_histogram(friends.M)
         print(df)
-        #print("Number of pairs of friends: ", df['Friends'].iloc[-1])
-        #print("Number of interactions: ", df['Interactions'].iloc[-1])
         timestr = time.strftime("%Y%m%d-%H%M%S")
         stats_df = create_sim_stats(friends.schedule, friends.M, False, 'data/stats/' + timestr + '.csv')
         create_model_report(html_report=True)  # set html_report to True to produce pandas_profiling report
@@ -93,4 +91,4 @@ if __name__ == '__main__':
         makedirs('data/avg_stats')
         makedirs('data/html')
 
-    main(iter=1, seg=False, mob=0.5, hub=False)
+    main(iter=1, seg=False, mob=0.5, hub=False) # SIMULATION CONFIGURATION
